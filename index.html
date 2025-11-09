@@ -232,7 +232,7 @@ const catalog = {
 };
 
 // ================= STATE =================
-const cart = {}; // { product: [{ flavour, qty }] }
+window.cart = {}; // { product: [{ flavour, qty }] }
 
 // ================= Helpers =================
 function renderGroup(container, group, category){
@@ -287,13 +287,13 @@ function renderGroup(container, group, category){
           const n = Math.max(0, parseInt(v||0, 10));
           qty.value = n;
           row.classList.toggle('selected', n>0);
-          if(!cart[name]) cart[name] = [];
-          const i = cart[name].findIndex(x=>x.flavour===option);
-          if(n===0){ if(i>-1) cart[name].splice(i,1); }
+          if(!window.cart[name]) window.cart[name] = [];
+          const i = window.cart[name].findIndex(x=>x.flavour===option);
+          if(n===0){ if(i>-1) window.cart[name].splice(i,1); }
           else {
-            if(i>-1) cart[name][i].qty = n; else cart[name].push({flavour:option, qty:n});
+            if(i>-1) window.cart[name][i].qty = n; else window.cart[name].push({flavour:option, qty:n});
           }
-          if(cart[name] && cart[name].length===0) delete cart[name];
+          if(window.cart[name] && window.cart[name].length===0) delete window.cart[name];
           updateSummary();
         }
         minus.addEventListener('click', ()=> setQty(parseInt(qty.value||0,10)-1));
@@ -351,7 +351,7 @@ function updateSummary(){
   const summary = document.getElementById('summary');
   const sendBtn = document.getElementById('sendBtn');
   const items = [];
-  Object.entries(cart).forEach(([product, arr])=>{
+  Object.entries(window.cart).forEach(([product, arr])=>{
     arr.forEach(({flavour, qty})=> items.push(product + ' — ' + flavour + ' x ' + qty));
   });
   if(items.length===0){ summary.textContent='No items selected yet.'; }
@@ -379,7 +379,7 @@ function buildMessage(){
   lines.push('Name: ' + name);
   lines.push('Customer Number: ' + num);
   lines.push('Order:');
-  Object.entries(cart).forEach(([product, arr])=>{
+  Object.entries(window.cart).forEach(([product, arr])=>{
     lines.push('- ' + product);
     arr.forEach(({flavour, qty})=> lines.push('  • ' + flavour + ' x' + qty));
   });
