@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Order Picker + WhatsApp Send</title>
+<style>
+  :root { --bg:#0b0f14; --card:#121821; --muted:#9fb0c3; --accent:#26d07c; }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Helvetica,Arial,sans-serif;background:var(--bg);color:#e9f0f6}
+  header{position:sticky;top:0;background:#0b0f14;z-index:20;padding:18px 16px;border-bottom:1px solid #1f2732}
+  .title{font-size:26px;font-weight:700}
+  input,textarea{background:#0f1520;border:2px solid red;border-radius:10px;color:#e9f0f6;padding:12px 14px;width:100%}
+  .ok{border-color:limegreen!important}
+  .row{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+  .container{max-width:980px;margin:0 auto;padding:16px}
+  .cat{margin:18px 0 8px;font-weight:700;opacity:.95}
+  .product{background:var(--card);border:1px solid #1f2732;border-radius:14px;margin:12px 0;padding:14px}
+  .head{display:flex;justify-content:space-between;cursor:pointer;align-items:center;gap:10px}
+  .flavours{display:none;padding-top:10px;border-top:1px dashed #2a3545;margin-top:10px}
+  .chip{display:flex;justify-content:space-between;align-items:center;background:#0f1520;border:1px solid #243244;padding:8px;border-radius:10px;margin:6px 0}
+  .qty{display:flex;gap:6px;align-items:center}
+  .qty input{width:54px;text-align:center}
+  .selected{border-color:var(--accent)}
+  .sticky-send{position:sticky;bottom:0;background:#0b0f14;border-top:1px solid #1f2732;padding:12px 16px}
+  .btn{background:var(--accent);border:none;border-radius:10px;padding:14px;font-weight:700;width:100%;cursor:pointer;opacity:.6}
+  .btn.enabled{opacity:1}
+  #summary{margin-top:8px;font-size:13px;color:#9fb0c3}
+  .badge{display:inline-block;background:#142033;border:1px solid #263448;color:#cfe0f5;border-radius:999px;padding:4px 8px;font-size:12px;margin-left:6px}
+  .fallback{display:none;background:#111a28;border:1px solid #24364a;border-radius:10px;padding:12px 14px;margin:12px 16px}
+  .fallback a{color:#7cdfff}
+  .fallback textarea{background:#0f1520;border:1px solid #203040;color:#cfe0f5;border-radius:8px;padding:8px;width:100%}
+  
+  .subcat{margin:6px 0 4px;color:#b7c7da;font-weight:600}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="title">Place Your Order <span class="badge">WhatsApp: +44 7466 492227</span></div>
+  <input id="bizNumber" type="tel" value="447466492227" style="display:none;" />
+  <div class="row">
+    <input id="custName" type="text" placeholder="Customer name (required)" required />
+    <input id="custNumber" type="tel" placeholder="Customer number (required)" required />
+  </div>
+  <div class="row">
+    <textarea id="notes" placeholder="Additional info (optional)"></textarea>
+  </div>
+</header>
+
+<div class="container" id="list"></div>
+
+<div class="sticky-send">
+  <button id="sendBtn" class="btn" disabled>Send Order via WhatsApp</button>
+  <div id="summary">No items selected yet.</div>
+</div>
+
+<div id="fallbackBox" class="fallback">
+  <div><strong>If your browser blocks the WhatsApp popup:</strong></div>
+  <ol>
+    <li>Tap one of these links: <a id="waMeLink" href="#" target="_blank" rel="noopener">Open with wa.me</a> · <a id="apiLink" href="#" target="_blank" rel="noopener">Open with api.whatsapp.com</a></li>
+    <li>Or copy this message and paste into WhatsApp:</li>
+  </ol>
+  <textarea id="rawMessage" rows="6" readonly></textarea>
+</div>
+
+
+
+<script>
+const DEBUG = /[?&]debug=1/.test(location.search);
+// ================= CATALOG WITH CATEGORIES =================
+const catalog = {
+  "Disposables": {
+    "SKE 600 Kits": [
+      "Banana Ice","Berry Lemonade","Black Mint","Blue Fusion","Blue Razz Cherry","Blueberry Cherry Cranberry","Blueberry Raspberry","Blueberry Raspberry Lemon","Bru Ice","Bubblegum Ice","Cherry Cola","Cherry Ice","Cola Ice","Cola Lime","Fizzy Cherry","Fresh Menthol Mijito","Gummy Bear","Hbubba","Ice Pop","Juicy Peach","Kiwi Grape Raspberry","Lemon & Lime","Lemon & Mint","Lemon Peach Passion Fruit","Mad Blue","Mango Peach Pineapple","Menthol","Mr. Blue","Mr. Pink","Pineapple Ice","Pink Lemonade","Rainbow","Red Berry Ice","Rocky Candy Orange","Strawberry Jelly Beans","Strawberry Kiwi","Strawberry Mojito","Strawberry Raspberry Blueberry","Strawberry Raspberry Ice","Strawberry Watermelon","Strawberry Watermelon Bubblegum","Summer Dream","Tobacco","Triple Mango","Watermelon Ice"
+    ],
+
+    "HAYATI PM 6K KITS": [
+      "Banana Ice","Blackberry Raspberry","Blue Razz Blackcurrant","Blue Razz Cherry","Blue Razz GB","Blue Razz Lemonade","Blue Razz Pineapple","Blue Sour Raspberry","Blueberry Bgum","Blueberry Cherry Cranberry","Blueberry Pomegranate","Blueberry Raspberry","Caribb Crush","Cherry Berry","Cherry Cola","Cola lime","Double menthol","Fizzy Cherry","Fresh Mint","Fruit Twist","H' Bubba","Ice Pop","Juicy Peach","Lemon & Lime","Mad blue","Mr Blue","Pineapple Ice","Pipeline Punch","Pink Lemonade","Red Apple Ice","Strawberry Cherry Cranberry","Strawberry H Bubba","Strawberry Kiwi","Strawberry Raspberry Blue Berry","Strawberry Raspberry Cherry","Strawberry Raspberry Ice","Strawberry Watermelon","Summer Dream","Triple Mango","Watermelon Ice"
+    ],
+    "HAYATI PM 6K PODS": [
+      "Banana Ice","Blackberry Raspberry","Blue Razz Blackcurrant","Blue Razz Cherry","Blue Razz GB","Blue Razz Lemonade","Blue Razz Pineapple","Blue Sour Raspberry","Blueberry Bgum","Blueberry Cherry Cranberry","Blueberry Pomegranate","Blueberry Raspberry","Caribb Crush","Cherry Berry","Cherry Cola","Cola lime","Double menthol","Fizzy Cherry","Fresh Mint","Fruit Twist","H' Bubba","Ice Pop","Juicy Peach","Lemon & Lime","Mad blue","Mr Blue","Pineapple Ice","Pipeline Punch","Pink Lemonade","Red Apple Ice","Strawberry Cherry Cranberry","Strawberry H Bubba","Strawberry Kiwi","Strawberry Raspberry Blue Berry","Strawberry Raspberry Cherry","Strawberry Raspberry Ice","Strawberry Watermelon","Summer Dream","Triple Mango","Watermelon Ice"
+    ],
+
+    "HAYATI PU 25K KITS": [
+      "Blackcurrant Cotton K / Blue Rasp","Blue Razz GB","Blueberry H'Bubba / Watermelon H'Bubba","Blueberry Cotton K / Raspberry Cotton K","Blueberry Raspberry","Blue Razz Cherry","Blue Sour Raspberry","Cherry Berry","Fresh Mint","Grape GB / Strawberry GB","H'Bubba","Lemon & Lime","Mr Blue","Kiwi Banana / Straw Banana","Straw Grapefruit / Straw Dragonfruit","Summer Dream","Straw Guava / Dragon Berries","Strawberry Watermelon","Straw Cranberry / Cherry / Cherry Ice","Watermelon B'Gum / Strawberry B'Gum"
+    ],
+    "HAYATI PU 25K PODS": [
+      "Blackcurrant Cotton K / Blue Rasp","Blue Razz GB","Blueberry H'Bubba / Watermelon H'Bubba","Blueberry Cotton K / Raspberry Cotton K","Blueberry Raspberry","Blue Razz Cherry","Blue Sour Raspberry","Cherry Berry","Fresh Mint","Grape GB / Strawberry GB","H'Bubba","Lemon & Lime","Mr Blue","Kiwi Banana / Straw Banana","Straw Grapefruit / Straw Dragonfruit","Summer Dream","Straw Guava / Dragon Berries","Strawberry Watermelon","Straw Cranberry / Cherry / Cherry Ice","Watermelon B'Gum / Strawberry B'Gum"
+    ],
+
+    "ELFBAR 600": [
+      "Apple Peach","Banana Ice","Blue Razz Lemonade","Blueberry","Blueberry Cherry Cranberry","Blueberry Sour Raspberry","Cherry Cola","Cherry Ice","Elfturbo Ice","Grape","Kiwi Passion Fruit Guava","Mad Blue","P&B Cloudd","Snoow Tobacco","Strawberry Kiwi","Strawberry Raspberry Cherry Ice","Watermelon"
+    ],
+
+    "HAYATI MINI ULTRA KITS": [
+      "Blackcurrant Lemonade / Straw' Lemonade","Blue Razz Cherry","Blue Razz GB","Blue Razz Pineapple / Strawberry Ice","Blue Sour Raspberry","Blueberry Cotton K / Raspberry Cotton K","Blueberry Raspberry","Cherry Berry","Cherry Ice / Peach Mango","Cola Ice / Orange Lemon & Lime","Fruit Bomb / Straw' Watermelon B' Gum","Grape GB / Strawberry GB","Lemon & Lime","Mr Blue","Sour Apple / Juicy Peach","Straw' Cranberry Cherry / Cherry Ice","Straw' Guava / Dragon Berries","Strawberry Raspberry Ice","Summer Dream"
+    ],
+    "HAYATI MINI ULTRA PODS": [
+      "Blue Razz GB","Blue Razz Pineapple","Blue Sour Raspberry","Blueberry Cotton K","Blueberry Raspberry","Cherry Berry","Cherry Ice","Dragon Berries","Fruit Bomb","Grape GB","Juicy Peach","Lemon & Lime","Orange Lemon & Lime","Peach Mango","Sour Apple","Straw Cranberry Cherry","Strawberry GB","Strawberry Ice","Strawberry Raspberry Ice","Summer Dream"
+    ],
+
+    "CRYSTAL PRO 10K KITS": [
+      "Banana Ice","Blue Razz Cherry","Blue Razz Gummy Bear","Blue Sour Raspberry","Blueberry Raspberry","Cherry Berry","Cherry Cola","Cherry Ice","Cherry Peach Lemonade","CP Special","Double Apple","Fresh Mint","Fruit Bomb","Gummy Bear","Hubba Bubba","Juicy Peach","Juicy Raspberries","Mr Blue","Strawberry Cherry Cranberry","Strawberry Kiwi","Strawberry Raspberry Ice","Summer Dream","Watermelon Ice"
+    ],
+    "CRYSTAL PRO 10K PODS": [
+      "Banana Ice","Blue Razz Cherry","Blue Razz Gummy Bear","Blue Sour Raspberry","Blueberry Raspberry","Cherry Berry","Cherry Cola","Cherry Ice","CP Special","Double Apple","Fresh Mint","Fruit Bomb","Gummy Bear","Hubba Bubba","Juicy Peach","Juicy Raspberries","Lemon Lime","Mr Blue","Strawberry Raspberry Ice","Watermelon Ice"
+    ],
+
+    "IVG PRO 10K KITS": [
+      "Banana Ice","Blue Razz Retro","Blue Raspberry Ice","Blue Sour Raspberry","Blueberry Mint","Cherry Ice","Classic Menthol","Double Apple","Double Mango","Fizzy Cherry","Fizzy Orange","Fizzy Strawberry","Fresh Menthol Mojito","Fresh Mint","Grape Ice","Green Fruits","Lemon Lime","Mixed Berry","Peach Ice","Pineapple Ice","Pink Lemonade","Raspberry Blast","Red Sour Raspberry","Sour Cherry Watermelon","Strawberry Ice","Strawberry Kiwi","Strawberry Raspberry Cherry","Strawberry Watermelon","Tobacco"
+    ],
+    "IVG PRO 10K PODS": [
+      "Banana Ice","Blue Razz Retro","Blue Raspberry Ice","Blue Sour Raspberry","Blueberry Mint","Cherry Ice","Classic Menthol","Double Apple","Double Mango","Fizzy Cherry","Fizzy Orange","Fizzy Strawberry","Fresh Menthol Mojito","Fresh Mint","Grape Ice","Green Fruits","Kiwi Passionfruit Guava","Lemon Lime","Mixed Berry","Peach Ice","Pineapple Ice","Pink Lemonade","Raspberry Blast","Red Sour Raspberry","Sour Cherry Watermelon","Strawberry Ice"
+    ],
+
+    "IVG SMART MAX 10K KITS": [
+      "Banana Ice","Blue Raspberry Ice","Blue Razz Lemonade","Blue Sour Raspberry","Blueberry Raspberry","Classic Menthol","Cola Ice","Fizzy Cherry","Frozen Cherry","Frozen Watermelon","Grape","Green Apple","Lemon and Lime","Pineapple Ice","Polar Mint","Retro Orange","Strawberry Raspberry Cherry","Triple Mango","Tropical Fruits","Watermelon Strawberry"
+    ],
+    "IVG SMART MAX 10K PODS": [
+      "Banana Ice","Blue Raspberry Ice","Blue Razz Lemonade","Blue Sour Raspberry","Blueberry Raspberry","Cola Ice","Fizzy Cherry","Frozen Cherry","Frozen Watermelon","Grape","Green Apple","Lemon and Lime","Pineapple Ice","Polar Mint","Retro Orange","Strawberry Raspberry Cherry","Triple Mango","Watermelon Strawberry"
+    ],
+
+    "Pyne Pod Click 50K KITS": [
+      "Classic Edition","Drinks Edition","Green Edition","Lemonade Edition","Lime Edition","Mango Edition","Pineapple Edition","Raspberry Edition","Red Edition","Special Edition","Sweet Edition","Tropical Edition","Yellow Edition"
+    ],
+    "Pyne Pod Click 50K Pods": [
+      "Blueberry Raspberry Lemonade","Cherry Ice","Cola Lime","Fizzy Cherry","Fresh Mint","Fresh Raspberry Mojito","Lemon Lime","Mango Passion","Mango Strawberry Peach","Pineapple Ice","Pineapple Passion Lime","Pink Purple Lemonade","Rainbow","Sour Cherry Raspberry Ice","Strawberry Watermelon","Summer Punch","Watermelon Ice","White Gummy"
+    ],
+
+    "HYOLA ULTRA 30 KITS": [
+      "Berry Edition","Blackberry Edition","Blue Edition","Blue Razz Edition","Cherry Edition","Gummy Edition","Juicy Edition","Lemonade Edition","Lime Edition","Mint Edition","Pineapple Edition","Purple Edition","Raspberry Edition","Red Edition","Strawberry Edition","Tropical Edition","Watermelon Edition","Yellow Edition"
+    ],
+    "HYOLA ULTRA 20K PODS": [
+      "Blue Edition","Blue Razz Edition","Cherry Edition","Lime Edition","Pineapple Edition","Strawberry Edition"
+    ],
+
+    "HAYATI RUBIK 7K KITS": [
+      "Banana Ice","Blue Razz Cherry","Blue Razz GB","Blue Sour Raspberry","Blueberry Cherry Cranberry","Blueberry Raspberry","Fresh Mint","H'Bubba","Juicy Peach","Lemon & Lime","Lemon Cola Ice","Mr Blue","Red Apple Ice","Strawberry Kiwi","Strawberry Raspberry Ice","Summer Dream","Triple Mango","Vim Ice","Watermelon Ice"
+    ],
+    "HAYATI RUBIK 7K PODS": [
+      "Banana Ice","Blue Razz Cherry","Blue Razz GB","Blue Sour Raspberry","Blueberry Cherry Cranberry","Blueberry Raspberry","Fresh Mint","H'Bubba","Juicy Peach","Lemon & Lime","Lemon Cola Ice","Mr Blue","Pineapple Ice","Red Apple Ice","Strawberry Kiwi","Strawberry Raspberry Ice","Summer Dream","Triple Mango","Vim Ice","Watermelon Ice"
+    ]
+  },
+
+  "Nicsalts": {
+    "ELUX Nicsalts 5mg": ["Banana Ice","Blue Razz Gummy","Blueberry Cherry Cranberry","Blueberry Raspberry","Blueberry Sour Raspberry","Cherry Sour Rasberry","Fizzy Cherry","Grape Berry","Gummy Bear","Lemon & Lime","Menthol","Mr. Blue","Oasis","Pineapple Ice","Rainbow","Strawberry Ice","Strawberry Kiwi","Strawberry Raspberry Cherry","Triple Mango","Watermelon Ice"],
+    "ELUX Nicsalts 10mg": ["Apple Peach","Banana Ice","Berry Lemonade","Blackberry Ice","Blackcurrant Lemonade","Blackcurrant Menthol","Blue Razz Cherry","Blue Razz Gummy","Blueberry","Blueberry Bubblegum","Blueberry Cherry Cranberry","Blueberry Raspberry","Blueberry Sour Raspberry","Cherry Ice","Cherry Lime","Cherry Sour Raspberry","Cola","Double Apple","Fizzy Cherry","Fresh Menthol Mojito","Fresh Mint","Grape","Grape Berry","Grape Gummy Bear","Gummy Bear","Hawaii Sunrise","Juicy Peach","Kiwi Passionfruit Guava","Lemon and Lime","Lemon Mint","Lemon Peach Passionfruit","Menthol","Mr. Blue","Oasis","Pineapple Ice","Pink Lemonade","Rainbow","Raspberry Watermelon","Straight Tobacco","Strawberry Ice","Strawberry Icecream","Strawberry Kiwi","Strawberry Raspberry Cherry","Strawberry Watermelon Bubblegum","Summer Dream","Tiger Blood","Triple Mango","Triple Melon","Vanilla Tobacco","Watermelon Ice"],
+    "ELUX Nicsalts 20mg": ["Apple Peach","Banana Ice","Berry Crush","Blue Bubba","Blue Ice Pop","Blue Razz Lemonade","Blueberry","Blueberry Cherry Cranberry","Blueberry Pomegranate","Blueberry Sour Raspberry","Blueberry Watermelon","Butter Mints","Cherry Cola","Cherry Ice","Cream Tobacco","Fizzy Cherry","Fresh Menthol Mojito","Grape","Grape Gummy Bear","Gummy Bear","Kiwi Passionfruit Guava","Lemon & Lime","Menthol","Mr. Blue","NRG Ice","Orange Zest","Peach Ice","Pear Banana","Pineapple Coconut","Pineapple Ice","Pink Bubba","Pink Lemonade","Rainbow","Red Apple Ice","Sour Rainbow","Strawberry Banana","Strawberry Cherry Raspberry","Strawberry Ice Cream","Strawberry Kiwi","Strawberry Sour Raspberry","Triple Mango","Unicorn Shake","Watermelon","Watermelon Strawberry Kiwi","White Peach Razz","Watermelon Ice"],
+
+    "BAR JUICE 10mg": ["Apple Peach","Banana Ice","Berry Crush","Blue Bubba","Blue Ice Pop","Blue Razz Lemonade","Blueberry","Blueberry Cherry Cranberry","Blueberry Pomegranate","Blueberry Sour Raspberry","Blueberry Watermelon","Butter Mints","Cherry Cola","Cherry Ice","Cream Tobacco","Fizzy Cherry","Fresh Menthol Mojito","Fresh Mint","Grape","Grape Gummy Bear","Gummy Bear","Kiwi Passionfruit Guava","Lemon & Lime","Menthol","Mr. Blue","NRG Ice","Orange Zest","Peach Ice","Pear Banana","Pineapple Coconut","Pineapple Ice","Pink Bubba","Pink Lemonade","Rainbow","Red Apple Ice","Sour Rainbow","Strawberry Banana","Strawberry Cherry Raspberry","Strawberry Ice","Strawberry Ice Cream","Strawberry Kiwi","Strawberry Sour Raspberry","Triple Mango","Unicorn Shake","Watermelon","Watermelon Strawberry Kiwi","White Peach Razz"],
+    "BAR JUICE 20mg": ["Berry Ice","Blue Fusion","Blue Razz Lemonade","Blueberry Peach Ice","Blueberry Raspberries","Blueberry Sour Raspberry","Cherry Ice","Cola Ice","Fizzy Cherry","Fruit Medley","Green Grape","Kiwi Passionfruit Guava","Lemon & Lime","Menthol","Pineapple Peach Mango","Pink Lemonade","Sour Apple Ice","Sour Pineapple Ice","Watermelon Ice"],
+
+    "HAYATI NICSALTS 20MG": ["Banana Ice","Berry Lemonade","Black Mint","Blue Fusion","Blue Razz Cherry","Blue Razz Lemonade","Blue Sour Raspberry","Blueberry Cherry Cranberry","Blueberry Raspberry","Blueberry Raspberry Lemon","Bru Ice","Bubblegum Ice","Cherry Cola","Cherry Ice","Cola Ice","Cola Lime","Fizzy Cherry","Fresh Menthol Mijito","Fresh Mint","Gummy Bear","Hbubba","Ice Pop","Juicy Peach","Kiwi Grape Raspberry","Lemon & Lime","Lemon & Mint","Lemon Peach Passion Fruit","Mad Blue","Mango Peach Pineapple","Menthol","Mr. Blue","Mr. Pink","Pineapple Ice","Pink Lemonade","Rainbow","Red Berry Ice","Rocky Candy Orange","Strawberry Jelly Beans","Strawberry Kiwi","Strawberry Mojito","Strawberry Raspberry Ice","Strawberry Watermelon","Strawberry Watermelon Bubblegum","Summer Dream","Tobacco","Triple Mango","Watermelon Ice"],
+    "HAYATI NICSALTS 10MG": ["Banana Ice","Berry Lemonade","Black Mint","Blue Fusion","Blue Razz Cherry","Blue Razz Lemonade","Blue Sour Raspberry","Blueberry Cherry Cranberry","Blueberry Raspberry","Blueberry Raspberry Lemon","Bru Ice","Bubblegum Ice","Cherry Cola","Cherry Ice","Cola Ice","Cola Lime","Fizzy Cherry","Fresh Menthol Mijito","Fresh Mint","Gummy Bear","Hbubba","Ice Pop","Juicy Peach","Kiwi Grape Raspberry","Lemon & Lime","Lemon & Mint","Lemon Peach Passion Fruit","Mad Blue","Mango Peach Pineapple","Menthol","Mr. Blue","Mr. Pink","Pineapple Ice","Pink Lemonade","Rainbow","Red Berry Ice","Rocky Candy Orange","Strawberry Jelly Beans","Strawberry Kiwi","Strawberry Mojito","Strawberry Raspberry Ice","Strawberry Watermelon","Strawberry Watermelon Bubblegum","Summer Dream","Tobacco","Triple Mango","Watermelon Ice"],
+    "HAYATI E-LIQUID 50/50": ["Banana Ice","Blue Razz Cherry","Blue Razz Gummy Bear","Blue Sour Raspberry","Blueberry Cherry Cranberry","Blueberry Raspberry","Fizzy Cherry","Fresh Mint","Juicy Peach","Lemon & Lime","Mr. Blue","Pineapple Ice","Rainbow","Red Apple Ice","Strawberry Raspberry Ice","Summer Dream","Triple Mango","Vimbull Ice","Watermelon Ice","Watermelon Lemon Burst"],
+    "HAYATI E-LIQUID 70/30": ["Banana Ice","Blue Razz Cherry","Blue Razz Gummy Bear","Blue Sour Raspberry","Blueberry Cherry Cranberry","Blueberry Raspberry","Fizzy Cherry","Fresh Mint","Juicy Peach","Lemon & Lime","Mr. Blue","Pineapple Ice","Rainbow","Red Apple Ice","Strawberry Raspberry Ice","Summer Dream","Triple Mango","Vimbull Ice","Watermelon Ice","Watermelon Lemon Burst"]
+  },
+
+  "Pods": {
+    "VAPORESSO XROS PODS": ["0.4 Ω","0.6 Ω","0.8 Ω","1.0 Ω","1.2 Ω"],
+    "VAPORESSO LUXE X PODS": ["0.3 Ω","0.4 Ω","0.6 Ω","0.8 Ω"],
+    "VAPORESSO DUAL VIBE PODS": ["0.6/0.8 Ω"],
+    "VAPORESSO ARMOUR G PODS": ["5ML"],
+    "OXVA XLIM PODS": ["0.4 Ω","0.6 Ω","0.8 Ω"],
+    "OXVA NEXLIM PODS": ["0.6 Ω","0.8 Ω","1.2 Ω"],
+    "OXVA VPRIME PODS": ["0.2 Ω","0.4 Ω","0.6 Ω","0.8 Ω"]
+  },
+
+  "Kits": {
+    "OXVA": {
+      "OXVA NEXLIM KITS": ["Black Gold","Black Warrior","Coral Orange","Dark Blue","Dark Brown","Dark Grey","Glory Red","Pearl Pink","Pine Green","Power Black","Rose Gold","Starry Blue"],
+      "OXVA XLIM PRO 2 KITS": ["Amber Orange","Black Warrior","Blue Python","Brown Python","Dark Shadow","Green Python","Jungle Green","Limited Edition","Ocean Blue","Platinum Grey","Rose Pink","Silver Carbon","Titanium Blue","Titanium Grey"],
+      "OXVA XLIM PRO KITS": ["Aurora Blue","Aurora Pink","Black Carbon","Black Gold","Brown Wood","Coral Orange","Denim Blue","Denim Brown","Denim Green","Fancy Feather","Gleamy Blue","Gleamy Cyan","Gleamy Green","Gleamy Grey","Gleamy Pink","Gleamy Red","Grey Leather","KingKong Pink","Pine Green"],
+      "OXVA XLIM CLASSIC EDITION KITS": ["Black","Black Pink","Black Silver","Gradient Blue","Gradient Green","Gunmetal","Orange Silver","Pink Blue","Purple Pink"],
+      "OXVA XLIM GO KITS": ["Dark Brown","Graffiti Black","Graffiti Blue","Light Brown","Light Green","Luxe Black","Luxe Brown","Red","Striped Blue","Striped Grey","Striped Orange","White"],
+      "OXVA XLIM GO 2 KITS": ["Black Shadow","Blue Ripple","Carbon Black","Green Ripple","Light Brown Shadow","Metal Blue","Metal Silver","Pink Ripple"],
+      "OXVA XLIM SQ PRO KITS": ["Black Leather"],
+      "OXVA XLIM SQ PRO KITS 2": ["Black Carbon","Brown Wood","Celadon Marble","Dream Pink","Dream Purple","Frost Marble","Gunmetal Wood"],
+      "OXVA NEXLIM GO KITS": ["Black Warrior","Rose Pink","Sahara Brown","Silky Black","Silky Coffee","Space Grey"],
+      "OXVA V-PRIME KITS": ["Black Carbon","Black Leather","Brown Leather","Glorious Gold","Natural Green"]
+    },
+    "Vaporesso": {
+      "VAPORESSO VIBE": ["Berry Purple","Black","Cherry Pink","Fresh Green","Racing Red","Silver","Sky Blue","Turbo Blue"],
+      "VAPORESSO VIBE SE": ["Black","Blue","Frozen Mint","Grape Purple","Grapefruit Soda","Ice Blueberry","Ice Cream Pink","Mocha Coffee","Strawberry Red","White"],
+      "VAPORESSO LUXE X": ["Dazzling Yellow","White"],
+      "VAPORESSO LUXE X2": ["Avocado Green","Light Pink","Light Purple","Night Black","Ruby White","Wasp Yellow","White Silver"],
+      "VAPORESSO LUXE XR MAX": ["Apple Green","Blue","Coral Orange (Leather)","Forest Green (Leather)","Glacier Blue","Green","Pink","Red","Silver","White"],
+      "VAPORESSO XROS PRO": ["Black","Blue","Champagne Gold","Green","Orange","Pink","Purple","Red","Sapphire","Silver"],
+      "VAPORESSO XROS PRO 2": ["Dawn Purple","Gem Green","Glittering Black","Glittering Gold","Glittering Silver","Moonlit Pink","Storm Blue"],
+      "VAPORESSO XROS MINI": ["Aurora","Black","Cherry Red","Forest Green","Grape Purple","Lime Green","Midnight Blue","Neon","Orange Red","Sierra Blue","Silver","Space Grey","Vitality","Violet"],
+      "VAPORESSO ARMOUR G": ["Blue","Brown","Silver","Pink"],
+      "VAPORESSO XROS 3 MINI": ["Black","Icy Silver","Space Grey"],
+      "VAPORESSO XROS 4": ["Black","Blue","Bloody Mary","Champagne Gold","Green","Lilac Purple","Pastel Palette","Pink Mint","Silver","Sunset Neon"],
+      "VAPORESSO XROS 4 MINI": ["Black","Camo Red","Camo Silver","Camo Yellow","Champagne Gold","Ice Blue","Ice Green","Ice Pink","Ice Purple","Space Grey"],
+      "VAPORESSO XROS 4 NANO": ["Aquamarine","Camouflage","Graphite Black","Race Track","Titanium Silver","Twilight Purple","Word-Pop Blue","Word-Pop Yellow"],
+      "VAPORESSO XROS 5": ["Blue Silk","Carbon Stripe","Coral Red","Cosmic Black","Grey Silk","Jade Green","Lavender Purple","Opal Pink","Opal White","Violet Silk"],
+      "VAPORESSO XROS 5 MINI": ["Black","Carbon Black","Flowing Blue","Flowing Green","Flowing Pink","Pastel Crystal","Purple","Rose Red","Sky Blue","Titanium Silver"]
+    }
+  },
+
+  "Snus": {
+    "NORDIC SPIRIT SNUS": ["SPEARMINT 6MG","MINT 6MG","RASBERRY 6MG","SWEET MINT 6MG","SPEARMINT 9MG","MINT 9MG","TROPICAL MIX 9MG","RASBERRY 9MG","FOREST BERRIES 9MG","SPEARMINT 11MG","MINT 11MG","SWEETMINT 11MG","FROSTY BERRY 11MG"],
+    "HAYATI NIC POUCHES 12MG": ["Banana Ice","Blueberry","Bubblegum","Cola","Coffee","Frosted Mint","Grape Ice","Ice Cold","Mango Ice","Ruby Berry","Strawberry Lychee"],
+    "HAYATI NIC POUCHES 20MG": ["Banana Ice","Blueberry","Bubblegum","Cola","Coffee","Frosted Mint","Grape Ice","Ice Cold","Mango Ice","Ruby Berry","Strawberry Lychee"],
+    "HAYATI NIC POUCHES 30MG": ["Banana Ice","Blueberry","Bubblegum","Cola","Coffee","Frosted Mint","Grape Ice","Ice Cold","Mango Ice","Ruby Berry","Strawberry Lychee"],
+    "PABLO SNUS": ["Banana ice","Blue mint","Blue raspberry","Blueberry Cherry Cranberry","Bubblegum","Cherry cola","Cola","Dark cherry","Frosted ice","Frosted mint","Grape ice","Green mint","Kiwi","Lemonade","Liquorice","Mango ice","Mocca","Orange","Passion fruit","Pear","Strawberry cheesecake","Strawberry lychee","Strawberry Kiwi","Strawberry watermelon","Sour Blueberries","Tropical fruits","Red","X-ice cold","Ice cold","Ice cold mini","Gold blue raspberry","Gold dark cherry","Gold frosted ice","Gold frosted mint","Gold grape ice","Gold kiwi","Gold passion fruit","Gold tropical punch","Gold white mint"],
+    "Killa Snus": ["Apple","Banana Ice","Blue Mint","Blue Raspberry","Blueberry","Bubblegum","Cappuccino","Cherry Cola","Cold Dry","Cold Mint","Cold X Mint","Dark Cherry","Double Mint","Frosted Mint","Grape Ice","Green Mint","Lemonade","Liqourice","Mango Ice","Orange","Pineapple","Spearmint","Strawberry Cheesecake","Strawberry Lychee","Strawberry Watermelon","Tropical Punch","Watermelon","White Coffee","MINI Banana Ice","MINI Blueberry","MINI Cold Mint","MINI Mango Ice"]
+  },
+  "Smoking": {
+    "ELEMENTS": ["RAINBOW + TIPS","BLUE + TIPS","PINK + TIPS","RAINBOW","BLUE"],
+    "SWAN": ["LOOSE TIPS X10","SLIM TIPS","EXTRA SLIM TIPS","ULTRA SLIM TIPS","MENTHOL EXTRA SLIM TIPS"],
+    "RIZLA": ["GREEN MULTIPACK 20X5 BOOKS","GREEN 100 BOOKS","BLUE KINGSIZE 50 BOOKS","BLUE 100 BOOKS","SILVER KINGSIZE 50 BOOKS","SILVER COMBI PACK 24X32 KINGSIZE BOOKS","SILVER 100 BOOKS","RIZLA MENTHOL","RIZLA MINT","RIZLA+ POLAR BLAST"],
+    "PIPES AND BONGS": ["ACRYLIC LARGE BONG","ACRYLIC MINI BONG","GLASS PIPE x32","METAL PIPE BOX x12"],
+    "ZIGZAG": ["GREEN 100 BOOKS","GREEN MULTIPACK X3 KINGSIZE BOOKS","GREEN MULTIPACK X8","SILVER MULTIPACK X3 SLIM BOOKS","BLUE MULTIPACK X3 SLIM BOOKS","BLUE MULTIPACK X8"],
+    "CONES": ["ELEMENTS CONES","JUMBO CONES","RAW CONES"],
+    "OCB": ["OCB BROWN + TIPS","OCB BLACK + TIPS"],
+    "LIGHTERS": ["CLIPPER LIGHTER","PRINTED LIGHTER","ADAMO LIGHTER (CHEAP)","RS LIGHTER (CHEAP)","CLIPPER LIGHTER GAS","CLIPPER LIGHTER FLUID"],
+    "ROLLING PAPERS": ["RIPS FLAVOUR PAPER","RIPS REGULAR PAPER","CLOUDS RAINBOW PAPER","CLOUD MIX PAPER","GROLLZ"]
+  },
+  "Misc Items": {
+    "Drinks": ["REDBULL CASE","COCA COLA CASE"],
+    "Duracell Batteries": [
+      "DURACELL C - 10 PACK X2",
+      "DURACELL D - 10 PACK X2",
+      "DURACELL AA - 20 PACK X4",
+      "DURACELL AAA - 10 PACK X4"
+    ],
+    "Sovereign Turbojet Air Sanitiser (Pack Of 12)": [
+      "BUBBLEGUM","CHERRY","GREED","RADA","SAVAGE","WATERMELON","LEMON","AYLON"
+    ]
+  }
+};
+
+// ================= STATE =================
+window.cart = {}; // { product: [{ flavour, qty }] }
+
+// ================= Helpers =================
+function renderGroup(container, group, category){
+  const productNames = Object.keys(group);
+  if(productNames.length === 0){
+    const empty = document.createElement('div');
+    empty.style.color = '#9fb0c3';
+    empty.style.fontSize = '14px';
+    empty.textContent = 'No items yet.';
+    container.appendChild(empty);
+    return;
+  }
+  productNames.forEach(name=>{
+    const val = group[name];
+    if(Array.isArray(val)){
+      // Render product card
+      const wrap = document.createElement('div');
+      wrap.className = 'product';
+
+      const head = document.createElement('div');
+      head.className = 'head';
+      const h2 = document.createElement('h2'); h2.textContent = name; h2.style.margin='0'; h2.style.fontSize='18px';
+
+      const isColor = (category === 'Kits');
+      const isSize = (category === 'Pods');
+      const isProducts = (category === 'Smoking');
+      const showLabel = isColor ? 'Show colours' : (isSize ? 'Show sizes' : (isProducts ? 'Show products' : 'Show flavours'));
+      const hideLabel = isColor ? 'Hide colours' : (isSize ? 'Hide sizes' : (isProducts ? 'Hide products' : 'Hide flavours'));
+
+      const toggle = document.createElement('button');
+      toggle.textContent = showLabel;
+      toggle.dataset.mode = isColor ? 'colours' : (isSize ? 'sizes' : 'flavours');
+      // persist the correct labels per button for resets later
+      toggle.dataset.showLabel = showLabel;
+      toggle.dataset.hideLabel = hideLabel;
+      toggle.style.padding='6px 10px';
+      toggle.style.borderRadius='10px';
+      toggle.style.border='1px solid #263445';
+      toggle.style.background='#172131';
+      toggle.style.color='#cfe0f5';
+      head.append(h2, toggle);
+
+      const box = document.createElement('div'); box.className='flavours';
+      val.forEach(option=>{
+        const row = document.createElement('div'); row.className='chip';
+        const label = document.createElement('div'); label.textContent = option;
+        const qtyWrap = document.createElement('div'); qtyWrap.className='qty';
+        const minus = document.createElement('button'); minus.textContent='-';
+        const qty = document.createElement('input'); qty.type='number'; qty.min='0'; qty.value='0';
+        const plus = document.createElement('button'); plus.textContent='+';
+        function setQty(v){
+          const n = Math.max(0, parseInt(v||0, 10));
+          qty.value = n;
+          row.classList.toggle('selected', n>0);
+          if(!window.cart[name]) window.cart[name] = [];
+          const i = window.cart[name].findIndex(x=>x.flavour===option);
+          if(n===0){ if(i>-1) window.cart[name].splice(i,1); }
+          else {
+            if(i>-1) window.cart[name][i].qty = n; else window.cart[name].push({flavour:option, qty:n});
+          }
+          if(window.cart[name] && window.cart[name].length===0) delete window.cart[name];
+          updateSummary();
+        }
+        minus.addEventListener('click', ()=> setQty(parseInt(qty.value||0,10)-1));
+        plus .addEventListener('click', ()=> setQty(parseInt(qty.value||0,10)+1));
+        qty  .addEventListener('input', ()=> setQty(qty.value));
+        qtyWrap.append(minus, qty, plus);
+        row.append(label, qtyWrap);
+        box.appendChild(row);
+      });
+
+      head.addEventListener('click', ()=>{
+        const open = box.style.display==='block';
+        document.querySelectorAll('.flavours').forEach(el=> el.style.display='none');
+        document.querySelectorAll('.product .head button').forEach(b=> {
+          // reset labels to each button's own saved label
+          b.textContent = b.dataset.showLabel || 'Show flavours';
+        });
+        box.style.display = open ? 'none' : 'block';
+        toggle.textContent = open ? (toggle.dataset.showLabel || showLabel) : (toggle.dataset.hideLabel || hideLabel);
+      });
+
+      wrap.append(head, box);
+      container.appendChild(wrap);
+    } else if(val && typeof val === 'object'){
+      const sub = document.createElement('div');
+      sub.className = 'subcat';
+      sub.textContent = name;
+      container.appendChild(sub);
+      renderGroup(container, val, category);
+    }
+  });
+}
+
+// ================= RENDER =================
+function render(){
+  const list = document.getElementById('list');
+  list.innerHTML = '';
+  Object.entries(catalog).forEach(([category, products])=>{
+    const h = document.createElement('div');
+    h.className = 'cat';
+    h.textContent = category;
+    list.appendChild(h);
+    renderGroup(list, products, category);
+  });
+}
+
+// ================= SUMMARY / VALIDATION =================
+function requiredFilled(){
+  const name = document.getElementById('custName').value.trim();
+  const num  = document.getElementById('custNumber').value.trim();
+  return !!(name && num);
+}
+
+function updateSummary(){
+  const summary = document.getElementById('summary');
+  const sendBtn = document.getElementById('sendBtn');
+  const items = [];
+  Object.entries(window.cart).forEach(([product, arr])=>{
+    arr.forEach(({flavour, qty})=> items.push(product + ' — ' + flavour + ' x ' + qty));
+  });
+  if(items.length===0){ summary.textContent='No items selected yet.'; }
+  else { summary.textContent = items.length + ' item(s) ready to send.'; }
+
+  const nameEl = document.getElementById('custName');
+  const numEl  = document.getElementById('custNumber');
+  nameEl.classList.toggle('ok', !!nameEl.value.trim());
+  numEl.classList.toggle('ok',  !!numEl.value.trim());
+
+  const enable = requiredFilled() && items.length>0;
+  sendBtn.disabled = !enable;
+  sendBtn.classList.toggle('enabled', enable);
+}
+
+document.getElementById('custName').addEventListener('input', updateSummary);
+document.getElementById('custNumber').addEventListener('input', updateSummary);
+
+// ================= MESSAGE =================
+function buildMessage(){
+  const name = document.getElementById('custName').value.trim();
+  const num  = document.getElementById('custNumber').value.trim();
+  const extra= document.getElementById('notes').value.trim();
+  const lines = [];
+  lines.push('Name: ' + name);
+  lines.push('Customer Number: ' + num);
+  lines.push('Order:');
+  Object.entries(window.cart).forEach(([product, arr])=>{
+    lines.push('- ' + product);
+    arr.forEach(({flavour, qty})=> lines.push('  - ' + flavour + ' x' + qty));
+  });
+  if(extra) lines.push('Notes: ' + extra);
+  return lines.join('\n');
+}
+
+function normalizePhone(raw){
+  const digits = (raw||'').replace(/\D/g,'');
+  if(digits.startsWith('00')) return digits.slice(2);
+  if(digits.startsWith('0'))  return '44' + digits.slice(1);
+  return digits;
+}
+
+function setFallbackLinks(text, phone){
+  const waMe = 'https://wa.me/' + phone + '?text=' + encodeURIComponent(text);
+  const api  = 'https://api.whatsapp.com/send?phone=' + phone + '&text=' + encodeURIComponent(text);
+  document.getElementById('waMeLink').href = waMe;
+  document.getElementById('apiLink').href  = api;
+  document.getElementById('rawMessage').value = text;
+  document.getElementById('fallbackBox').style.display = 'block';
+}
+
+function safeOpen(url){
+  const a = document.createElement('a');
+  a.href = url; a.target = '_blank'; a.rel = 'noopener';
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+}
+
+// ================= INIT =================
+render();
+updateSummary();
+
+// ================= SEND =================
+document.getElementById('sendBtn').addEventListener('click', function(){
+  if(!requiredFilled()){ alert('Please fill in your Name and Number.'); return; }
+  const phone = normalizePhone(document.getElementById('bizNumber').value);
+  const text = buildMessage();
+  const waMe = 'https://wa.me/' + phone + '?text=' + encodeURIComponent(text);
+  const api  = 'https://api.whatsapp.com/send?phone=' + phone + '&text=' + encodeURIComponent(text);
+  try { safeOpen(waMe); } catch(e) {}
+  try { safeOpen(api);  } catch(e) {}
+  setTimeout(()=> setFallbackLinks(text, phone), 400);
+});
+
+// ================= SELF TESTS =================
+(function runTests(){
+  if(!DEBUG) return;
+  let panelEl = document.getElementById('testResult');
+  if(!panelEl){
+    panelEl = document.createElement('div');
+    panelEl.id = 'testResult';
+    panelEl.setAttribute('aria-live','polite');
+    panelEl.style.position='fixed';
+    panelEl.style.right='10px';
+    panelEl.style.bottom='10px';
+    panelEl.style.background='#10202e';
+    panelEl.style.border='1px solid #274055';
+    panelEl.style.color='#cfe0f5';
+    panelEl.style.borderRadius='8px';
+    panelEl.style.padding='8px 10px';
+    panelEl.style.fontSize='12px';
+    panelEl.style.maxWidth='90vw';
+    document.body.appendChild(panelEl);
+  }
+  panelEl.style.display='block';
+  const out = [];
+  function assertEq(name, a, b){ if(a!==b){ out.push('X ' + name + ' Expected '+JSON.stringify(b)+' got '+JSON.stringify(a)); } else { out.push('OK ' + name); } }
+  
+  // Test 1: buildMessage line breaks & fields
+  const saveCart = window.cart; window.cart = { "P": [{flavour:"F1", qty:2},{flavour:"F2", qty:1}] };
+  document.getElementById('custName').value = 'Alice';
+  document.getElementById('custNumber').value = '07123 456789';
+  document.getElementById('notes').value = 'Leave at door';
+  const msg = buildMessage();
+  assertEq('join uses \\n', msg.indexOf('\n') > -1, true);
+  assertEq('message contains quantities', /F1 x2[\s\S]*F2 x1/.test(msg), true);
+  assertEq('message contains name', msg.includes('Name: Alice'), true);
+  assertEq('message contains number', msg.includes('Customer Number:'), true);
+
+  // Test 2: enable button when fields + item
+  updateSummary();
+  assertEq('send enabled', document.getElementById('sendBtn').disabled, false);
+
+  // Test 3: catalog basic validity (no stray placeholders)
+  const keys = Object.keys(catalog);
+  assertEq('catalog has Disposables', keys.includes('Disposables'), true);
+  assertEq('catalog has Nicsalts', keys.includes('Nicsalts'), true);
+  assertEq('catalog has Kits', keys.includes('Kits'), true);
+  assertEq('catalog has Pods', keys.includes('Pods'), true);
+  assertEq('no $ placeholders', JSON.stringify(catalog).includes('$'), false);
+
+  // Test 4: hayati nicsalts exist
+  assertEq('hayati 20mg exists', !!catalog.Nicsalts['HAYATI NICSALTS 20MG'], true);
+  assertEq('hayati 10mg exists', !!catalog.Nicsalts['HAYATI NICSALTS 10MG'], true);
+
+  // Test 5: Kits have colour labels; Pods have size labels
+  const buttons = Array.from(document.querySelectorAll('.product .head button'));
+  const hasColourButton = buttons.some(b=> b.dataset.mode === 'colours');
+  const hasSizeButton = buttons.some(b=> b.dataset.mode === 'sizes');
+  assertEq('has a colours-mode toggle', hasColourButton, true);
+  assertEq('has a sizes-mode toggle', hasSizeButton, true);
+
+  // Test 6: Kits subcategories present
+  assertEq('OXVA subcategory exists', !!catalog.Kits && !!catalog.Kits.OXVA, true);
+  assertEq('Vaporesso subcategory exists', !!catalog.Kits && !!catalog.Kits.Vaporesso, true);
+
+  // Test 7: Smoking category button should say Show products
+  const smokingBtn = buttons.find(b=> (b.dataset.showLabel||'').toLowerCase()==='show products');
+  assertEq('smoking show label', !!smokingBtn, true);
+
+  // Test 8: Toggle label changes per data attributes
+  if(buttons[0]){
+    const btn = buttons[0];
+    const initial = btn.textContent;
+    btn.click();
+    const afterOpen = btn.textContent;
+    btn.click();
+    const afterClose = btn.textContent;
+    assertEq('toggle switches', (initial!==afterOpen) && (afterClose===initial), true);
+  }
+
+  // Restore
+  window.cart = saveCart; document.getElementById('custName').value=''; document.getElementById('custNumber').value=''; document.getElementById('notes').value=''; updateSummary();
+
+  // Display
+  panelEl.textContent = out.join(' | ');
+})();
+</script>
+</body>
+</html>
