@@ -30,7 +30,7 @@
   .fallback{display:none;background:#111a28;border:1px solid #24364a;border-radius:10px;padding:12px 14px;margin:12px 16px}
   .fallback a{color:#7cdfff}
   .fallback textarea{background:#0f1520;border:1px solid #203040;color:#cfe0f5;border-radius:8px;padding:8px;width:100%}
-  #testResult{position:fixed;right:10px;bottom:10px;background:#10202e;border:1px solid #274055;color:#cfe0f5;border-radius:8px;padding:8px 10px;font-size:12px;max-width:90vw}
+  #testResult{display:none; position:fixed;right:10px;bottom:10px;background:#10202e;border:1px solid #274055;color:#cfe0f5;border-radius:8px;padding:8px 10px;font-size:12px;max-width:90vw}
   .subcat{margin:6px 0 4px;color:#b7c7da;font-weight:600}
 </style>
 </head>
@@ -67,6 +67,7 @@
 <div id="testResult" aria-live="polite">Self-tests running...</div>
 
 <script>
+const DEBUG = /[?&]debug=1/.test(location.search);
 // ================= CATALOG WITH CATEGORIES =================
 const catalog = {
   "Disposables": {
@@ -381,7 +382,7 @@ function buildMessage(){
   lines.push('Order:');
   Object.entries(window.cart).forEach(([product, arr])=>{
     lines.push('- ' + product);
-    arr.forEach(({flavour, qty})=> lines.push('  • ' + flavour + ' x' + qty));
+    arr.forEach(({flavour, qty})=> lines.push('  - ' + flavour + ' x' + qty));
   });
   if(extra) lines.push('Notes: ' + extra);
   return lines.join('\n');
@@ -427,6 +428,9 @@ document.getElementById('sendBtn').addEventListener('click', function(){
 
 // ================= SELF TESTS =================
 (function runTests(){
+  if(!DEBUG) return;
+  const panelEl = document.getElementById('testResult');
+  if(panelEl) panelEl.style.display = 'block';
   const out = [];
   function assertEq(name, a, b){ if(a!==b){ out.push('X ' + name + ' Expected '+JSON.stringify(b)+' got '+JSON.stringify(a)); } else { out.push('OK ' + name); } }
   
