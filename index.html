@@ -15,9 +15,9 @@
   .row{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
   .container{max-width:980px;margin:0 auto;padding:16px}
   .cat{margin:18px 0 8px;font-weight:700;opacity:.95}
-  .product{background:var(--card);border:1px solid #1f2732;border-radius:14px;margin:12px 0;padding:14px}
+  .product,.brand{background:var(--card);border:1px solid #1f2732;border-radius:14px;margin:12px 0;padding:14px}
   .head{display:flex;justify-content:space-between;cursor:pointer;align-items:center;gap:10px}
-  .flavours{display:none;padding-top:10px;border-top:1px dashed #2a3545;margin-top:10px}
+  .flavours,.brand-content{display:none;padding-top:10px;border-top:1px dashed #2a3545;margin-top:10px}
   .chip{display:flex;justify-content:space-between;align-items:center;background:#0f1520;border:1px solid #243244;padding:8px;border-radius:10px;margin:6px 0}
   .qty{display:flex;gap:6px;align-items:center}
   .qty input{width:54px;text-align:center}
@@ -32,6 +32,8 @@
   .fallback textarea{background:#0f1520;border:1px solid #203040;color:#cfe0f5;border-radius:8px;padding:8px;width:100%}
   
   .subcat{margin:6px 0 4px;color:#b7c7da;font-weight:600}
+  .brand .head h2{margin:0;font-size:18px}
+  .brand .head button,.product .head button{padding:6px 10px;border-radius:10px;border:1px solid #263445;background:#172131;color:#cfe0f5}
 </style>
 </head>
 <body>
@@ -196,6 +198,11 @@ const catalog = {
       "VAPORESSO XROS 4 NANO": ["Aquamarine","Camouflage","Graphite Black","Race Track","Titanium Silver","Twilight Purple","Word-Pop Blue","Word-Pop Yellow"],
       "VAPORESSO XROS 5": ["Blue Silk","Carbon Stripe","Coral Red","Cosmic Black","Grey Silk","Jade Green","Lavender Purple","Opal Pink","Opal White","Violet Silk"],
       "VAPORESSO XROS 5 MINI": ["Black","Carbon Black","Flowing Blue","Flowing Green","Flowing Pink","Pastel Crystal","Purple","Rose Red","Sky Blue","Titanium Silver"]
+    },
+    "UWELL": {
+      "Uwell Caliburn G3 Pro KITS": ["Black Leather","Brown Leather","Emerald Green","Frozen Aurora","Space Grey"],
+      "Uwell Caliburn G4 KITS": ["Glacier Blue","Gunmetal Grey","Sahara Gold","Seashell White"],
+      "Uwell Caliburn G3 Lite KITS": ["Pale Purple","Space Black"]
     }
   },
 
@@ -266,14 +273,8 @@ function renderGroup(container, group, category){
       const toggle = document.createElement('button');
       toggle.textContent = showLabel;
       toggle.dataset.mode = isColor ? 'colours' : (isSize ? 'sizes' : 'flavours');
-      // persist the correct labels per button for resets later
       toggle.dataset.showLabel = showLabel;
       toggle.dataset.hideLabel = hideLabel;
-      toggle.style.padding='6px 10px';
-      toggle.style.borderRadius='10px';
-      toggle.style.border='1px solid #263445';
-      toggle.style.background='#172131';
-      toggle.style.color='#cfe0f5';
       head.append(h2, toggle);
 
       const box = document.createElement('div'); box.className='flavours';
@@ -308,10 +309,7 @@ function renderGroup(container, group, category){
       head.addEventListener('click', ()=>{
         const open = box.style.display==='block';
         document.querySelectorAll('.flavours').forEach(el=> el.style.display='none');
-        document.querySelectorAll('.product .head button').forEach(b=> {
-          // reset labels to each button's own saved label
-          b.textContent = b.dataset.showLabel || 'Show flavours';
-        });
+        document.querySelectorAll('.product .head button').forEach(b=> { b.textContent = b.dataset.showLabel || 'Show flavours'; });
         box.style.display = open ? 'none' : 'block';
         toggle.textContent = open ? (toggle.dataset.showLabel || showLabel) : (toggle.dataset.hideLabel || hideLabel);
       });
@@ -319,11 +317,43 @@ function renderGroup(container, group, category){
       wrap.append(head, box);
       container.appendChild(wrap);
     } else if(val && typeof val === 'object'){
-      const sub = document.createElement('div');
-      sub.className = 'subcat';
-      sub.textContent = name;
-      container.appendChild(sub);
-      renderGroup(container, val, category);
+      // For Kits, render brand collapsible blocks for OXVA, Vaporesso, UWELL
+      if(category === 'Kits' && (name === 'OXVA' || name === 'Vaporesso' || name === 'UWELL')){
+        const brand = document.createElement('div');
+        brand.className = 'brand';
+        const head = document.createElement('div');
+        head.className = 'head';
+        const h2 = document.createElement('h2'); h2.textContent = name;
+        const toggle = document.createElement('button');
+        toggle.textContent = 'Show kits';
+        toggle.dataset.showLabel = 'Show kits';
+        toggle.dataset.hideLabel = 'Hide kits';
+        head.append(h2, toggle);
+        const content = document.createElement('div');
+        content.className = 'brand-content';
+
+        // Render all products for this brand inside content
+        renderGroup(content, val, category);
+
+        head.addEventListener('click', ()=>{
+          const open = content.style.display === 'block';
+          // Close other brand sections (optional UX tidy)
+          document.querySelectorAll('.brand-content').forEach(el=> el.style.display='none');
+          document.querySelectorAll('.brand .head button').forEach(b=> b.textContent = b.dataset.showLabel || 'Show kits');
+          content.style.display = open ? 'none' : 'block';
+          toggle.textContent = open ? (toggle.dataset.showLabel||'Show kits') : (toggle.dataset.hideLabel||'Hide kits');
+        });
+
+        brand.append(head, content);
+        container.appendChild(brand);
+      } else {
+        // Default: simple subcategory label then recurse
+        const sub = document.createElement('div');
+        sub.className = 'subcat';
+        sub.textContent = name;
+        container.appendChild(sub);
+        renderGroup(container, val, category);
+      }
     }
   });
 }
@@ -369,6 +399,7 @@ function updateSummary(){
 }
 
 document.getElementById('custName').addEventListener('input', updateSummary);
+
 document.getElementById('custNumber').addEventListener('input', updateSummary);
 
 // ================= MESSAGE =================
@@ -478,29 +509,45 @@ document.getElementById('sendBtn').addEventListener('click', function(){
   assertEq('hayati 10mg exists', !!catalog.Nicsalts['HAYATI NICSALTS 10MG'], true);
 
   // Test 5: Kits have colour labels; Pods have size labels
-  const buttons = Array.from(document.querySelectorAll('.product .head button'));
-  const hasColourButton = buttons.some(b=> b.dataset.mode === 'colours');
-  const hasSizeButton = buttons.some(b=> b.dataset.mode === 'sizes');
+  const productButtons = Array.from(document.querySelectorAll('.product .head button'));
+  const hasColourButton = productButtons.some(b=> b.dataset.mode === 'colours');
+  const hasSizeButton = productButtons.some(b=> b.dataset.mode === 'sizes');
   assertEq('has a colours-mode toggle', hasColourButton, true);
   assertEq('has a sizes-mode toggle', hasSizeButton, true);
 
-  // Test 6: Kits subcategories present
-  assertEq('OXVA subcategory exists', !!catalog.Kits && !!catalog.Kits.OXVA, true);
-  assertEq('Vaporesso subcategory exists', !!catalog.Kits && !!catalog.Kits.Vaporesso, true);
+  // Test 6: Kits brand sections present
+  assertEq('OXVA brand exists', !!catalog.Kits && !!catalog.Kits.OXVA, true);
+  assertEq('Vaporesso brand exists', !!catalog.Kits && !!catalog.Kits.Vaporesso, true);
+  assertEq('UWELL brand exists', !!catalog.Kits && !!catalog.Kits.UWELL, true);
 
-  // Test 7: Smoking category button should say Show products
-  const smokingBtn = buttons.find(b=> (b.dataset.showLabel||'').toLowerCase()==='show products');
+  // Test 7: Smoking category button label wording
+  const smokingBtn = productButtons.find(b=> (b.dataset.showLabel||'').toLowerCase()==='show products');
   assertEq('smoking show label', !!smokingBtn, true);
 
-  // Test 8: Toggle label changes per data attributes
-  if(buttons[0]){
-    const btn = buttons[0];
+  // Test 8: Toggle label changes per data attributes (on a product)
+  if(productButtons[0]){
+    const btn = productButtons[0];
     const initial = btn.textContent;
     btn.click();
     const afterOpen = btn.textContent;
     btn.click();
     const afterClose = btn.textContent;
-    assertEq('toggle switches', (initial!==afterOpen) && (afterClose===initial), true);
+    assertEq('product toggle switches', (initial!==afterOpen) && (afterClose===initial), true);
+  }
+
+  // Test 9: Brand collapsible works (UWELL)
+  const brandHeads = Array.from(document.querySelectorAll('.brand .head button'));
+  const uwellHeadBtn = brandHeads.find(b=> b.previousSibling && b.previousSibling.textContent === 'UWELL');
+  assertEq('UWELL brand button exists', !!uwellHeadBtn, true);
+  if(uwellHeadBtn){
+    const initialText = uwellHeadBtn.textContent;
+    uwellHeadBtn.click();
+    const content = uwellHeadBtn.parentElement.nextSibling;
+    const openVisible = content && content.style.display === 'block';
+    uwellHeadBtn.click();
+    const restoredText = uwellHeadBtn.textContent;
+    assertEq('UWELL opens', openVisible, true);
+    assertEq('UWELL toggle label restores', restoredText === initialText, true);
   }
 
   // Restore
