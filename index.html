@@ -203,6 +203,20 @@ const catalog = {
       "Uwell Caliburn G3 Pro KITS": ["Black Leather","Brown Leather","Emerald Green","Frozen Aurora","Space Grey"],
       "Uwell Caliburn G4 KITS": ["Glacier Blue","Gunmetal Grey","Sahara Gold","Seashell White"],
       "Uwell Caliburn G3 Lite KITS": ["Pale Purple","Space Black"]
+    },
+    "GEEKVAPE": {
+      "Geekvape Sonder Q KITS": ["Green Purple","Red Blue","Sky Blue","Starry Night"],
+      "Geekvape Sonder Q2 KITS": ["Blinky Black","Burgundy Red","Fizzy Lemon","Fizzy Mint","Rocket Silver"]
+    },
+    "INNOKIN": {
+      "Innokin Endura T18E KITS": ["Black","Aquamarine","Purple","Rainbow","Red","Blue"],
+      "Innokin Go S KITS": ["Black","Pink","White","Black & White Gradient","Gold Gradient"]
+    }
+  ,
+    "ASPIRE": {
+      "Aspire Pockex KITS": ["White","Black & White Gradient","Gold Gradient"],
+      "Aspire Go Tech Pro KITS": ["Rose Gold","Stainless Steel","Titanium"],
+      "Aspire Gotek X KITS": ["Transparent (Clear)","Translucent Black","Translucent Royal Blue","Translucent Pink","Translucent Green","Translucent Lavender","Translucent Yellow","Spray Black","Space Grey","Sky Purple","Pearl White","Modern Red","Lake Blue","Cocoa Brown"]
     }
   },
 
@@ -317,8 +331,8 @@ function renderGroup(container, group, category){
       wrap.append(head, box);
       container.appendChild(wrap);
     } else if(val && typeof val === 'object'){
-      // For Kits, render brand collapsible blocks for OXVA, Vaporesso, UWELL
-      if(category === 'Kits' && (name === 'OXVA' || name === 'Vaporesso' || name === 'UWELL')){
+      // For Kits, render brand collapsible blocks for key brands
+      if(category === 'Kits' && (name === 'OXVA' || name === 'Vaporesso' || name === 'UWELL' || name === 'GEEKVAPE' || name === 'INNOKIN' || name === 'ASPIRE')){
         const brand = document.createElement('div');
         brand.className = 'brand';
         const head = document.createElement('div');
@@ -548,6 +562,55 @@ document.getElementById('sendBtn').addEventListener('click', function(){
     const restoredText = uwellHeadBtn.textContent;
     assertEq('UWELL opens', openVisible, true);
     assertEq('UWELL toggle label restores', restoredText === initialText, true);
+  }
+  // Test 10: GEEKVAPE brand exists
+  assertEq('GEEKVAPE brand exists', !!catalog.Kits && !!catalog.Kits.GEEKVAPE, true);
+
+  // Test 11: Brand collapsible works (GEEKVAPE)
+  const brandButtons = Array.from(document.querySelectorAll('.brand .head button'));
+  const geekHeadBtn = brandButtons.find(b=> b.previousSibling && b.previousSibling.textContent === 'GEEKVAPE');
+  assertEq('GEEKVAPE brand button exists', !!geekHeadBtn, true);
+  if(geekHeadBtn){
+    const initialText2 = geekHeadBtn.textContent;
+    geekHeadBtn.click();
+    const content2 = geekHeadBtn.parentElement.nextSibling;
+    const openVisible2 = content2 && content2.style.display === 'block';
+    geekHeadBtn.click();
+    const restoredText2 = geekHeadBtn.textContent;
+    assertEq('GEEKVAPE opens', openVisible2, true);
+    assertEq('GEEKVAPE toggle label restores', restoredText2 === initialText2, true);
+  }
+
+    // Test 12: INNOKIN brand exists
+  assertEq('INNOKIN brand exists', !!catalog.Kits && !!catalog.Kits.INNOKIN, true);
+
+  const innokinBtn2 = Array.from(document.querySelectorAll('.brand .head button')).find(b=> b.previousSibling && b.previousSibling.textContent === 'INNOKIN');
+  assertEq('INNOKIN button exists', !!innokinBtn2, true);
+  if(innokinBtn2){
+    const initTxt = innokinBtn2.textContent;
+    innokinBtn2.click();
+    const cont = innokinBtn2.parentElement.nextSibling;
+    const visible = cont && cont.style.display === 'block';
+    innokinBtn2.click();
+    const restored = innokinBtn2.textContent;
+    assertEq('INNOKIN opens', visible, true);
+    assertEq('INNOKIN toggles label', restored === initTxt, true);
+  }
+  // Test 13: ASPIRE brand exists
+  assertEq('ASPIRE brand exists', !!catalog.Kits && !!catalog.Kits.ASPIRE, true);
+
+  // Test 14: ASPIRE toggle works
+  const aspireBtn = Array.from(document.querySelectorAll('.brand .head button')).find(b=> b.previousSibling && b.previousSibling.textContent === 'ASPIRE');
+  assertEq('ASPIRE brand button exists', !!aspireBtn, true);
+  if(aspireBtn){
+    const initAsp = aspireBtn.textContent;
+    aspireBtn.click();
+    const aspContent = aspireBtn.parentElement.nextSibling;
+    const aspOpen = aspContent && aspContent.style.display === 'block';
+    aspireBtn.click();
+    const aspRestore = aspireBtn.textContent;
+    assertEq('ASPIRE opens', aspOpen, true);
+    assertEq('ASPIRE restores label', aspRestore === initAsp, true);
   }
 
   // Restore
