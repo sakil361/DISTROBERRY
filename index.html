@@ -238,6 +238,17 @@ const catalog = {
       "VOOPOO Argus G2 Mini KITS": [
         "Spring Green","Violet Red","Violet Pink"
       ]
+    },
+    "HAYATI QUOKKA": {
+      "Hayati Quokka Lite KITS": [
+        "Baby Pink","Neon Yellow","Pearl White","Shadow Black","Sky Blue","Vivid Violet"
+      ],
+      "Hayati Quokka Elite KITS": [
+        "Baby Pink","Forest Green","Navy Blue","Opal Grey","Pink Blue Gradient","Quokka Colour - Orange","Silver White"
+      ],
+      "Hayati Quokka Pro KITS": [
+        "Pearl White","Quokka Color - Orange","Baby Pink","Opal Grey","Navy Blue","Moss Green"
+      ]
     }
   },
 
@@ -353,7 +364,7 @@ function renderGroup(container, group, category){
       container.appendChild(wrap);
     } else if(val && typeof val === 'object'){
       // For Kits, render brand collapsible blocks for key brands
-      if(category === 'Kits' && (name === 'OXVA' || name === 'Vaporesso' || name === 'UWELL' || name === 'GEEKVAPE' || name === 'INNOKIN' || name === 'ASPIRE' || name === 'VOOPOO')){
+      if(category === 'Kits' && (name === 'OXVA' || name === 'Vaporesso' || name === 'UWELL' || name === 'GEEKVAPE' || name === 'INNOKIN' || name === 'ASPIRE' || name === 'VOOPOO' || name === 'HAYATI QUOKKA')){
         const brand = document.createElement('div');
         brand.className = 'brand';
         const head = document.createElement('div');
@@ -649,6 +660,9 @@ document.getElementById('sendBtn').addEventListener('click', function(){
     assertEq('VOOPOO opens', vOpen, true);
     assertEq('VOOPOO restores label', vRestore === initV, true);
   }
+
+  // New: HAYATI QUOKKA brand exists (sanity check)
+  assertEq('HAYATI QUOKKA brand exists', !!catalog.Kits && !!catalog.Kits['HAYATI QUOKKA'], true);
 
   // Restore
   window.cart = saveCart; document.getElementById('custName').value=''; document.getElementById('custNumber').value=''; document.getElementById('notes').value=''; updateSummary();
