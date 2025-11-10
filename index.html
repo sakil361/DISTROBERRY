@@ -218,6 +218,27 @@ const catalog = {
       "Aspire Go Tech Pro KITS": ["Rose Gold","Stainless Steel","Titanium"],
       "Aspire Gotek X KITS": ["Transparent (Clear)","Translucent Black","Translucent Royal Blue","Translucent Pink","Translucent Green","Translucent Lavender","Translucent Yellow","Spray Black","Space Grey","Sky Purple","Pearl White","Modern Red","Lake Blue","Cocoa Brown"]
     }
+  ,
+    "VOOPOO": {
+      "VOOPOO Argus Pro 2 KITS": [
+        "Spray Black","Space Grey","Sky Purple","Pearl White","Modern Red","Lake Blue","Cocoa Brown"
+      ],
+      "VOOPOO Drag X2 KITS": [
+        "Spray Black","Grey Metal","Sky Blue","Modern Red","Glow Pink","Pearl White","Carbon Fiber","Champagne Golden","Checkered Black","Galaxy Blue","Marsala","Moss Green","Retro","Snow Blue"
+      ],
+      "VOOPOO Argus A KITS": [
+        "Phantom Black","Storm Silver","Pearl White","Azure Blue","Racing Green","Phantom Red","Phantom Purple","Crystal Pink"
+      ],
+      "VOOPOO Argus G2 KITS": [
+        "Space Grey","Astral Silver","Pearl White","Peachy Beige","Iris Blue","Aurora Purple","Luxury Walnut","Navy Blue"
+      ],
+      "VOOPOO Argus G3 KITS": [
+        "Moss Green","Aurora Purple","Diamond White","Diamond Pink"
+      ],
+      "VOOPOO Argus G2 Mini KITS": [
+        "Spring Green","Violet Red","Violet Pink"
+      ]
+    }
   },
 
   "Snus": {
@@ -332,7 +353,7 @@ function renderGroup(container, group, category){
       container.appendChild(wrap);
     } else if(val && typeof val === 'object'){
       // For Kits, render brand collapsible blocks for key brands
-      if(category === 'Kits' && (name === 'OXVA' || name === 'Vaporesso' || name === 'UWELL' || name === 'GEEKVAPE' || name === 'INNOKIN' || name === 'ASPIRE')){
+      if(category === 'Kits' && (name === 'OXVA' || name === 'Vaporesso' || name === 'UWELL' || name === 'GEEKVAPE' || name === 'INNOKIN' || name === 'ASPIRE' || name === 'VOOPOO')){
         const brand = document.createElement('div');
         brand.className = 'brand';
         const head = document.createElement('div');
@@ -611,6 +632,22 @@ document.getElementById('sendBtn').addEventListener('click', function(){
     const aspRestore = aspireBtn.textContent;
     assertEq('ASPIRE opens', aspOpen, true);
     assertEq('ASPIRE restores label', aspRestore === initAsp, true);
+  }
+  // Test 15: VOOPOO brand exists
+  assertEq('VOOPOO brand exists', !!catalog.Kits && !!catalog.Kits.VOOPOO, true);
+
+  // Test 16: VOOPOO toggle works
+  const voopooBtn = Array.from(document.querySelectorAll('.brand .head button')).find(b=> b.previousSibling && b.previousSibling.textContent === 'VOOPOO');
+  assertEq('VOOPOO brand button exists', !!voopooBtn, true);
+  if(voopooBtn){
+    const initV = voopooBtn.textContent;
+    voopooBtn.click();
+    const vContent = voopooBtn.parentElement.nextSibling;
+    const vOpen = vContent && vContent.style.display === 'block';
+    voopooBtn.click();
+    const vRestore = voopooBtn.textContent;
+    assertEq('VOOPOO opens', vOpen, true);
+    assertEq('VOOPOO restores label', vRestore === initV, true);
   }
 
   // Restore
