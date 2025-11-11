@@ -97,70 +97,31 @@ const DEBUG = /[?&]debug=1/.test(location.search);
 // ================= CATALOG WITH CATEGORIES =================
 const catalog = {
   "Disposables": {
+  "SKE": {
     "SKE 600 Kits": [
       "Apple Peach","Banana Ice","Berry Ice","Blue Fusion","Blue Razz Lemonade","Blueberry Cherry Cranberry","Blueberry Peach Ice","Blueberry Raspberries","Blueberry Sour Raspberry","Bull Ice","Cherry Ice","Cola Ice","Fizzy Cherry","Fresh Menthol Mojito","Fruit Medley","Gami Rare","Green Grape","Kiwi Passionfruit Guava","Lemon & Lime","Lemon Peach Passionfruit","Mango Ice","Menthol","Peach Ice","Pineapple Peach Mango","Pink Lemonade","Sour Apple Ice","Sour Pineapple Ice","Strawberry Blast","Strawberry Burst","Strawberry Kiwi","Strawberry Raspberry","Tobacco","VMT Ice","Watermelon Ice","Watermelon Strawberry"
-    ],
+    ]
+  },
 
+  "HAYATI": {
     "HAYATI PM 6K KITS": [
       "Banana Ice","Blackberry Ice - NEW 🔥","Blackberry Raspberry","Blue Razz Blackcurrant","Blue Razz Cherry","Blue Razz GB","Blue Razz Lemonade","Blue Razz Pineapple","Blue Sour Raspberry","Blueberry Bgum","Blueberry Cherry Cranberry","Blueberry Pomegranate","Blueberry Raspberry","Caribb Crush","Cherry Berry","Cherry Cola","Cola lime","Double menthol","Fizzy Cherry","Fresh Mint","Fruit Twist","Grape GB - NEW 🔥","H' Bubba","Ice Pop","Juicy Peach","Lemon & Lime","Lemon Pineapple - NEW 🔥","Mad blue","Mr Blue","Pineapple Ice","Pipeline Punch","Pink Lemonade","Red Apple Ice","Strawberry Cherry Cranberry","Strawberry GB - NEW 🔥","Strawberry H Bubba","Strawberry Kiwi","Strawberry Raspberry Blue Berry","Strawberry Raspberry Cherry","Strawberry Raspberry Ice","Strawberry Watermelon","Summer Dream","Triple Mango","Watermelon Ice","White Peach Raspberry - NEW 🔥"
     ],
     "HAYATI PM 6K PODS": [
       "Banana Ice","Blackberry Raspberry","Blue Razz Blackcurrant","Blue Razz Cherry","Blue Razz GB","Blue Razz Lemonade","Blue Razz Pineapple","Blue Sour Raspberry","Blueberry Bgum","Blueberry Cherry Cranberry","Blueberry Pomegranate","Blueberry Raspberry","Caribb Crush","Cherry Berry","Cherry Cola","Cola lime","Double menthol","Fizzy Cherry","Fresh Mint","Fruit Twist","H' Bubba","Ice Pop","Juicy Peach","Lemon & Lime","Mad blue","Mr Blue","Pineapple Ice","Pipeline Punch","Pink Lemonade","Red Apple Ice","Strawberry Cherry Cranberry","Strawberry H Bubba","Strawberry Kiwi","Strawberry Raspberry Blue Berry","Strawberry Raspberry Cherry","Strawberry Raspberry Ice","Strawberry Watermelon","Summer Dream","Triple Mango","Watermelon Ice"
     ],
-
     "HAYATI PU 25K KITS": [
       "Blackcurrant Cotton K / Blue Rasp","Blue Razz GB","Blueberry H'Bubba / Watermelon H'Bubba","Blueberry Cotton K / Raspberry Cotton K","Blueberry Raspberry","Blue Razz Cherry","Blue Sour Raspberry","Cherry Berry","Fresh Mint","Grape GB / Strawberry GB","H'Bubba","Lemon & Lime","Mr Blue","Kiwi Banana / Straw Banana","Straw Grapefruit / Straw Dragonfruit","Summer Dream","Straw Guava / Dragon Berries","Strawberry Watermelon","Straw Cranberry / Cherry / Cherry Ice","Watermelon B'Gum / Strawberry B'Gum"
     ],
     "HAYATI PU 25K PODS": [
       "Blackcurrant Cotton K / Blue Rasp","Blue Razz GB","Blueberry H'Bubba / Watermelon H'Bubba","Blueberry Cotton K / Raspberry Cotton K","Blueberry Raspberry","Blue Razz Cherry","Blue Sour Raspberry","Cherry Berry","Fresh Mint","Grape GB / Strawberry GB","H'Bubba","Lemon & Lime","Mr Blue","Kiwi Banana / Straw Banana","Straw Grapefruit / Straw Dragonfruit","Summer Dream","Straw Guava / Dragon Berries","Strawberry Watermelon","Straw Cranberry / Cherry / Cherry Ice","Watermelon B'Gum / Strawberry B'Gum"
     ],
-
-    "ELFBAR 600": [
-      "Apple Peach","Banana Ice","Blue Razz Lemonade","Blueberry","Blueberry Cherry Cranberry","Blueberry Sour Raspberry","Cherry Cola","Cherry Ice","Elfturbo Ice","Grape","Kiwi Passion Fruit Guava","Mad Blue","P&B Cloudd","Snoow Tobacco","Strawberry Kiwi","Strawberry Raspberry Cherry Ice","Watermelon"
-    ],
-
     "HAYATI MINI ULTRA KITS": [
       "Blackcurrant Lemonade / Straw' Lemonade","Blue Razz Cherry","Blue Razz GB","Blue Razz Pineapple / Strawberry Ice","Blue Sour Raspberry","Blueberry Cotton K / Raspberry Cotton K","Blueberry Raspberry","Cherry Berry","Cherry Ice / Peach Mango","Cola Ice / Orange Lemon & Lime","Fruit Bomb / Straw' Watermelon B' Gum","Grape GB / Strawberry GB","Lemon & Lime","Mr Blue","Sour Apple / Juicy Peach","Straw' Cranberry Cherry / Cherry Ice","Straw' Guava / Dragon Berries","Strawberry Raspberry Ice","Summer Dream"
     ],
     "HAYATI MINI ULTRA PODS": [
       "Blue Razz GB","Blue Razz Pineapple","Blue Sour Raspberry","Blueberry Cotton K","Blueberry Raspberry","Cherry Berry","Cherry Ice","Dragon Berries","Fruit Bomb","Grape GB","Juicy Peach","Lemon & Lime","Orange Lemon & Lime","Peach Mango","Sour Apple","Straw Cranberry Cherry","Strawberry GB","Strawberry Ice","Strawberry Raspberry Ice","Summer Dream"
     ],
-
-    "CRYSTAL PRO 10K KITS": [
-      "Banana Ice","Blue Razz Cherry","Blue Razz Gummy Bear","Blue Sour Raspberry","Blueberry Raspberry","","Cherry Cola","Cherry Ice","Cherry Peach Lemonade","CP Special","Double Apple","Fresh Mint","Fruit Bomb","Gummy Bear","Hubba Bubba","Juicy Peach","Juicy Raspberries","Mr Blue","Strawberry Cherry Cranberry","Strawberry Kiwi","Strawberry Raspberry Ice","Summer Dream","Watermelon Ice"
-    ],
-    "CRYSTAL PRO 10K PODS": [
-      "Banana Ice","Blue Razz Cherry","Blue Razz Gummy Bear","Blue Sour Raspberry","Blueberry Raspberry","Cherry Berry","Cherry Cola","Cherry Ice","CP Special","Double Apple","Fresh Mint","Fruit Bomb","Gummy Bear","Hubba Bubba","Juicy Peach","Juicy Raspberries","Lemon Lime","Mr Blue","Strawberry Raspberry Ice","Watermelon Ice"
-    ],
-
-    "IVG PRO 10K KITS": [
-      "Banana Ice","Blue Razz Retro","Blue Raspberry Ice","Blue Sour Raspberry","Blueberry Mint","Cherry Ice","Classic Menthol","Double Apple","Double Mango","Fizzy Cherry","Fizzy Orange","Fizzy Strawberry","Fresh Menthol Mojito","Fresh Mint","Grape Ice","Green Fruits","Lemon Lime","Mixed Berry","Peach Ice","Pineapple Ice","Pink Lemonade","Raspberry Blast","Red Sour Raspberry","Sour Cherry Watermelon","Strawberry Ice","Strawberry Kiwi","Strawberry Raspberry Cherry","Strawberry Watermelon","Tobacco"
-    ],
-    "IVG PRO 10K PODS": [
-      "Banana Ice","Blue Razz Retro","Blue Raspberry Ice","Blue Sour Raspberry","Blueberry Mint","Cherry Ice","Classic Menthol","Double Apple","Double Mango","Fizzy Cherry","Fizzy Orange","Fizzy Strawberry","Fresh Menthol Mojito","Fresh Mint","Grape Ice","Green Fruits","Kiwi Passionfruit Guava","Lemon Lime","Mixed Berry","Peach Ice","Pineapple Ice","Pink Lemonade","Raspberry Blast","Red Sour Raspberry","Sour Cherry Watermelon","Strawberry Ice"
-    ],
-
-    "IVG SMART MAX 10K KITS": [
-      "Banana Ice","Blue Raspberry Ice","Blue Razz Lemonade","Blue Sour Raspberry","Blueberry Raspberry","Classic Menthol","Cola Ice","Fizzy Cherry","Frozen Cherry","Frozen Watermelon","Grape","Green Apple","Lemon and Lime","Pineapple Ice","Polar Mint","Retro Orange","Strawberry Raspberry Cherry","Triple Mango","Tropical Fruits","Watermelon Strawberry"
-    ],
-    "IVG SMART MAX 10K PODS": [
-      "Banana Ice","Blue Raspberry Ice","Blue Razz Lemonade","Blue Sour Raspberry","Blueberry Raspberry","Cola Ice","Fizzy Cherry","Frozen Cherry","Frozen Watermelon","Grape","Green Apple","Lemon and Lime","Pineapple Ice","Polar Mint","Retro Orange","Strawberry Raspberry Cherry","Triple Mango","Watermelon Strawberry"
-    ],
-
-    "Pyne Pod Click 50K KITS": [
-      "Classic Edition","Drinks Edition","Green Edition","Lemonade Edition","Lime Edition","Mango Edition","Pineapple Edition","Raspberry Edition","Red Edition","Special Edition","Sweet Edition","Tropical Edition","Yellow Edition"
-    ],
-    "Pyne Pod Click 50K Pods": [
-      "Blueberry Raspberry Lemonade","Cherry Ice","Cola Lime","Fizzy Cherry","Fresh Mint","Fresh Raspberry Mojito","Lemon Lime","Mango Passion","Mango Strawberry Peach","Pineapple Ice","Pineapple Passion Lime","Pink Purple Lemonade","Rainbow","Sour Cherry Raspberry Ice","Strawberry Watermelon","Summer Punch","Watermelon Ice","White Gummy"
-    ],
-
-    "HYOLA ULTRA 30 KITS": [
-      "Berry Edition","Blackberry Edition","Blue Edition","Blue Razz Edition","Cherry Edition","Gummy Edition","Juicy Edition","Lemonade Edition","Lime Edition","Mint Edition","Pineapple Edition","Purple Edition","Raspberry Edition","Red Edition","Strawberry Edition","Tropical Edition","Watermelon Edition","Yellow Edition"
-    ],
-    "HYOLA ULTRA 20K PODS": [
-      "Blue Edition","Blue Razz Edition","Cherry Edition","Lime Edition","Pineapple Edition","Strawberry Edition"
-    ],
-
     "HAYATI RUBIK 7K KITS": [
       "Banana Ice","Blue Razz Cherry","Blue Razz GB","Blue Sour Raspberry","Blueberry Cherry Cranberry","Blueberry Raspberry","Fresh Mint","H'Bubba","Juicy Peach","Lemon & Lime","Lemon Cola Ice","Mr Blue","Red Apple Ice","Strawberry Kiwi","Strawberry Raspberry Ice","Summer Dream","Triple Mango","Vim Ice","Watermelon Ice"
     ],
@@ -168,6 +129,56 @@ const catalog = {
       "Banana Ice","Blue Razz Cherry","Blue Razz GB","Blue Sour Raspberry","Blueberry Cherry Cranberry","Blueberry Raspberry","Fresh Mint","H'Bubba","Juicy Peach","Lemon & Lime","Lemon Cola Ice","Mr Blue","Pineapple Ice","Red Apple Ice","Strawberry Kiwi","Strawberry Raspberry Ice","Summer Dream","Triple Mango","Vim Ice","Watermelon Ice"
     ]
   },
+
+  "ELFBAR": {
+    "ELFBAR 600": [
+      "Apple Peach","Banana Ice","Blue Razz Lemonade","Blueberry","Blueberry Cherry Cranberry","Blueberry Sour Raspberry","Cherry Cola","Cherry Ice","Elfturbo Ice","Grape","Kiwi Passion Fruit Guava","Mad Blue","P&B Cloudd","Snoow Tobacco","Strawberry Kiwi","Strawberry Raspberry Cherry Ice","Watermelon"
+    ]
+  },
+
+  "CRYSTAL PRO": {
+    "CRYSTAL PRO 10K KITS": [
+      "Banana Ice","Blue Razz Cherry","Blue Razz Gummy Bear","Blue Sour Raspberry","Blueberry Raspberry","","Cherry Cola","Cherry Ice","Cherry Peach Lemonade","CP Special","Double Apple","Fresh Mint","Fruit Bomb","Gummy Bear","Hubba Bubba","Juicy Peach","Juicy Raspberries","Mr Blue","Strawberry Cherry Cranberry","Strawberry Kiwi","Strawberry Raspberry Ice","Summer Dream","Watermelon Ice"
+    ],
+    "CRYSTAL PRO 10K PODS": [
+      "Banana Ice","Blue Razz Cherry","Blue Razz Gummy Bear","Blue Sour Raspberry","Blueberry Raspberry","Cherry Berry","Cherry Cola","Cherry Ice","CP Special","Double Apple","Fresh Mint","Fruit Bomb","Gummy Bear","Hubba Bubba","Juicy Peach","Juicy Raspberries","Lemon Lime","Mr Blue","Strawberry Raspberry Ice","Watermelon Ice"
+    ]
+  },
+
+  "IVG": {
+    "IVG PRO 10K KITS": [
+      "Banana Ice","Blue Razz Retro","Blue Raspberry Ice","Blue Sour Raspberry","Blueberry Mint","Cherry Ice","Classic Menthol","Double Apple","Double Mango","Fizzy Cherry","Fizzy Orange","Fizzy Strawberry","Fresh Menthol Mojito","Fresh Mint","Grape Ice","Green Fruits","Lemon Lime","Mixed Berry","Peach Ice","Pineapple Ice","Pink Lemonade","Raspberry Blast","Red Sour Raspberry","Sour Cherry Watermelon","Strawberry Ice","Strawberry Kiwi","Strawberry Raspberry Cherry","Strawberry Watermelon","Tobacco"
+    ],
+    "IVG PRO 10K PODS": [
+      "Banana Ice","Blue Razz Retro","Blue Raspberry Ice","Blue Sour Raspberry","Blueberry Mint","Cherry Ice","Classic Menthol","Double Apple","Double Mango","Fizzy Cherry","Fizzy Orange","Fizzy Strawberry","Fresh Menthol Mojito","Fresh Mint","Grape Ice","Green Fruits","Kiwi Passionfruit Guava","Lemon Lime","Mixed Berry","Peach Ice","Pineapple Ice","Pink Lemonade","Raspberry Blast","Red Sour Raspberry","Sour Cherry Watermelon","Strawberry Ice"
+    ],
+    "IVG SMART MAX 10K KITS": [
+      "Banana Ice","Blue Raspberry Ice","Blue Razz Lemonade","Blue Sour Raspberry","Blueberry Raspberry","Classic Menthol","Cola Ice","Fizzy Cherry","Frozen Cherry","Frozen Watermelon","Grape","Green Apple","Lemon and Lime","Pineapple Ice","Polar Mint","Retro Orange","Strawberry Raspberry Cherry","Triple Mango","Tropical Fruits","Watermelon Strawberry"
+    ],
+    "IVG SMART MAX 10K PODS": [
+      "Banana Ice","Blue Raspberry Ice","Blue Razz Lemonade","Blue Sour Raspberry","Blueberry Raspberry","Cola Ice","Fizzy Cherry","Frozen Cherry","Frozen Watermelon","Grape","Green Apple","Lemon and Lime","Pineapple Ice","Polar Mint","Retro Orange","Strawberry Raspberry Cherry","Triple Mango","Watermelon Strawberry"
+    ]
+  },
+
+  "PYNE POD": {
+    "Pyne Pod Click 50K KITS": [
+      "Classic Edition","Drinks Edition","Green Edition","Lemonade Edition","Lime Edition","Mango Edition","Pineapple Edition","Raspberry Edition","Red Edition","Special Edition","Sweet Edition","Tropical Edition","Yellow Edition"
+    ],
+    "Pyne Pod Click 50K Pods": [
+      "Blueberry Raspberry Lemonade","Cherry Ice","Cola Lime","Fizzy Cherry","Fresh Mint","Fresh Raspberry Mojito","Lemon Lime","Mango Passion","Mango Strawberry Peach","Pineapple Ice","Pineapple Passion Lime","Pink Purple Lemonade","Rainbow","Sour Cherry Raspberry Ice","Strawberry Watermelon","Summer Punch","Watermelon Ice","White Gummy"
+    ]
+  },
+
+  "HYOLA": {
+    "HYOLA ULTRA 30 KITS": [
+      "Berry Edition","Blackberry Edition","Blue Edition","Blue Razz Edition","Cherry Edition","Gummy Edition","Juicy Edition","Lemonade Edition","Lime Edition","Mint Edition","Pineapple Edition","Purple Edition","Raspberry Edition","Red Edition","Strawberry Edition","Tropical Edition","Watermelon Edition","Yellow Edition"
+    ],
+    "HYOLA ULTRA 20K PODS": [
+      "Blue Edition","Blue Razz Edition","Cherry Edition","Lime Edition","Pineapple Edition","Strawberry Edition"
+    ]
+  }
+},
+
 
   // ====== NICSALTS GROUPED BY BRAND ======
   "Nicsalts": {
@@ -492,6 +503,46 @@ function renderGroup(container, group, category){
         brand.append(head, content);
         container.appendChild(brand);
       }
+        // Brand collapsibles for Disposables
+else if (category === 'Disposables' && (
+  name === 'SKE' ||
+  name === 'HAYATI' ||
+  name === 'ELFBAR' ||
+  name === 'CRYSTAL PRO' ||
+  name === 'IVG' ||
+  name === 'PYNE POD' ||
+  name === 'HYOLA'
+)) {
+  const brand = document.createElement('div');
+  brand.className = 'brand';
+
+  const head = document.createElement('div');
+  head.className = 'head';
+  const h2 = document.createElement('h2'); h2.textContent = name;
+  const toggle = document.createElement('button');
+  toggle.textContent = 'Show products';
+  toggle.dataset.showLabel = 'Show products';
+  toggle.dataset.hideLabel = 'Hide products';
+  head.append(h2, toggle);
+
+  const content = document.createElement('div');
+  content.className = 'brand-content';
+  renderGroup(content, val, category);
+
+  head.addEventListener('click', () => {
+    const open = content.style.display === 'block';
+    document.querySelectorAll('.brand-content').forEach(el => el.style.display = 'none');
+    document.querySelectorAll('.brand .head button')
+      .forEach(b => b.textContent = b.dataset.showLabel || 'Show products');
+
+    content.style.display = open ? 'none' : 'block';
+    toggle.textContent = open ? toggle.dataset.showLabel : toggle.dataset.hideLabel;
+  });
+
+  brand.append(head, content);
+  container.appendChild(brand);
+}
+
       // Brand collapsibles for Pods (OXVA, Vaporesso)
    else if (category === 'Pods' && (name === 'OXVA' || name === 'Vaporesso' || name === 'GOTEK'|| name === 'GEEKVAPE'|| name === 'VOOPOO'|| name === 'CALIBURN'|| name === 'HAYATI QUOKKA'|| name === 'INNOKIN' )) {
     const brand = document.createElement('div');
