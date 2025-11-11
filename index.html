@@ -209,6 +209,10 @@ const catalog = {
       "Q PODS": ["0.6 Ω","0.8 Ω"],
       "Z XM COIL": ["0.4"]
        },
+    "INNOKIN": {
+      "INNOKIN T18E COIL": ["1.5 Ω"],
+      "INNOKIN GO S COIL": ["1.6 Ω"]
+       },
     "VOOPOO": {
       "ARGUS PODS": ["0.4 Ω"],
       "V MATE PODS": ["0.4 Ω","0.7 Ω","1 Ω"],
@@ -488,7 +492,7 @@ function renderGroup(container, group, category){
         container.appendChild(brand);
       }
       // Brand collapsibles for Pods (OXVA, Vaporesso)
-   else if (category === 'Pods' && (name === 'OXVA' || name === 'Vaporesso' || name === 'GOTEK'|| name === 'GEEKVAPE'|| name === 'VOOPOO'|| name === 'CALIBURN'|| name === 'HAYATI QUOKKA' )) {
+   else if (category === 'Pods' && (name === 'OXVA' || name === 'Vaporesso' || name === 'GOTEK'|| name === 'GEEKVAPE'|| name === 'VOOPOO'|| name === 'CALIBURN'|| name === 'HAYATI QUOKKA'|| name === 'INNOKIN' )) {
     const brand = document.createElement('div');
     brand.className = 'brand';
     const head = document.createElement('div');
