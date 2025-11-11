@@ -212,11 +212,12 @@ const catalog = {
     "VOOPOO": {
       "ARGUS PODS": ["0.4 Ω"],
       "V MATE PODS": ["0.4 Ω","0.7 Ω","1 Ω"],
-      "PNP X COIL": ["0.15","0.2","0.3","0.45","0.6","0.8","1"]
-      
-      }
+      "PNP X COIL": ["0.15","0.2","0.3","0.45","0.6","0.8","1"],
+      },
+    "CALIBURN": {
+      "G3 PODS": ["0.6 Ω","0.9 Ω"]
+  }
   },
-
   "Kits": {
     "OXVA": {
       
@@ -484,7 +485,7 @@ function renderGroup(container, group, category){
         container.appendChild(brand);
       }
       // Brand collapsibles for Pods (OXVA, Vaporesso)
-   else if (category === 'Pods' && (name === 'OXVA' || name === 'Vaporesso' || name === 'GOTEK'|| name === 'GEEKVAPE'|| name === 'VOOPOO' )) {
+   else if (category === 'Pods' && (name === 'OXVA' || name === 'Vaporesso' || name === 'GOTEK'|| name === 'GEEKVAPE'|| name === 'VOOPOO'|| name === 'CALIBURN' )) {
     const brand = document.createElement('div');
     brand.className = 'brand';
     const head = document.createElement('div');
