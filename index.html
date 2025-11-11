@@ -98,7 +98,7 @@ const DEBUG = /[?&]debug=1/.test(location.search);
 const catalog = {
   "Disposables": {
     "SKE 600 Kits": [
-      "Banana Ice","Berry Lemonade","Black Mint","Blue Fusion","Blue Razz Cherry","Blueberry Cherry Cranberry","Blueberry Raspberry","Blueberry Raspberry Lemon","Bru Ice","Bubblegum Ice","Cherry Cola","Cherry Ice","Cola Ice","Cola Lime","Fizzy Cherry","Fresh Menthol Mijito","Gummy Bear","Hbubba","Ice Pop","Juicy Peach","Kiwi Grape Raspberry","Lemon & Lime","Lemon & Mint","Lemon Peach Passion Fruit","Mad Blue","Mango Peach Pineapple","Menthol","Mr. Blue","Mr. Pink","Pineapple Ice","Pink Lemonade","Rainbow","Red Berry Ice","Rocky Candy Orange","Strawberry Jelly Beans","Strawberry Kiwi","Strawberry Mojito","Strawberry Raspberry Blueberry","Strawberry Raspberry Ice","Strawberry Watermelon","Strawberry Watermelon Bubblegum","Summer Dream","Tobacco","Triple Mango","Watermelon Ice"
+      "Apple Peach","Banana Ice","Berry Ice","Blue Fusion","Blue Razz Lemonade","Blueberry Cherry Cranberry","Blueberry Peach Ice","Blueberry Raspberries","Blueberry Sour Raspberry","Bull Ice","Cherry Ice","Cola Ice","Fizzy Cherry","Fresh Menthol Mojito","Fruit Medley","Gami Rare","Green Grape","Kiwi Passionfruit Guava","Lemon & Lime","Lemon Peach Passionfruit","Mango Ice","Menthol","Peach Ice","Pineapple Peach Mango","Pink Lemonade","Sour Apple Ice","Sour Pineapple Ice","Strawberry Blast","Strawberry Burst","Strawberry Kiwi","Strawberry Raspberry","Tobacco","VMT Ice","Watermelon Ice","Watermelon Strawberry"
     ],
 
     "HAYATI PM 6K KITS": [
@@ -323,23 +323,34 @@ const catalog = {
 window.cart = {}; // { product: [{ flavour, qty }] }
 
 // ================= OUT-OF-STOCK MAP =================
+// ================= OUT-OF-STOCK MAP =================
 const OOS = {
   "HAYATI PM 6K KITS": new Set(["Cherry Berry"]),
-  "VAPORESSO XROS 3 MINI": new Set(["Black","Icy Silver","Space Grey"]),
+
+  "VAPORESSO XROS 3 MINI": new Set([
+    "Black","Icy Silver","Space Grey"
+  ]),
+
   "VAPORESSO XROS PRO": new Set([
     "Black","Blue","Champagne Gold","Green","Orange",
     "Pink","Purple","Red","Sapphire","Silver"
   ]),
+
   "BAR JUICE 10mg": new Set([
     "Fresh Mint",
     "Lemon & Lime",
     "Strawberry Ice",
     "Unicorn Shake"
   ]),
+
   "BAR JUICE 20mg": new Set([
     "Pink Lemonade"
-  ])
+  ]),
+
+  "SKE 600 Kits": new Set(["Bull Ice","Fresh Menthol Mojito","Gami Rare","Lemon Peach Passionfruit","Mango Ice","Peach Ice","Strawberry Blast","Strawberry Burst","Strawberry Kiwi","Strawberry Raspberry","Tobacco","VMT Ice","Watermelon Strawberry"])
 };
+
+
 
 // ================= Helpers =================
 function renderGroup(container, group, category){
