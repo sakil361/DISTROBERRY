@@ -1,3 +1,6 @@
+Absolutely—here’s the full, drop-in HTML with **Cherry Berry** in **HAYATI PM 6K KITS** greyed out and disabled. I added a tiny `.oos` style, an `OOS` map, and a small check inside `renderGroup` to apply it.
+
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -18,7 +21,7 @@
   .product,.brand{background:var(--card);border:1px solid #1f2732;border-radius:14px;margin:12px 0;padding:14px}
   .head{display:flex;justify-content:space-between;cursor:pointer;align-items:center;gap:10px}
   .flavours,.brand-content{display:none;padding-top:10px;border-top:1px dashed #2a3545;margin-top:10px}
-  .chip{display:flex;justify-content:space-between;align-items:center;background:#0f1520;border:1px solid #243244;padding:8px;border-radius:10px;margin:6px 0}
+  .chip{display:flex;justify-content:space-between;align-items:center;background:#0f1520;border:1px solid #243244;padding:8px;border-radius:10px;margin:6px 0;position:relative}
   .qty{display:flex;gap:6px;align-items:center}
   .qty input{width:54px;text-align:center}
   .selected{border-color:var(--accent)}
@@ -34,6 +37,30 @@
   .subcat{margin:6px 0 4px;color:#b7c7da;font-weight:600}
   .brand .head h2{margin:0;font-size:18px}
   .brand .head button,.product .head button{padding:6px 10px;border-radius:10px;border:1px solid #263445;background:#172131;color:#cfe0f5}
+
+  /* Out-of-stock styling */
+  .oos{
+    opacity:.45;
+    filter:grayscale(1);
+  }
+  .oos::after{
+    content:"Out of stock";
+    position:absolute;
+    right:10px;
+    top:50%;
+    transform:translateY(-50%);
+    font-size:12px;
+    color:#9fb0c3;
+    background:#1a2535;
+    border:1px solid #2a3648;
+    padding:2px 6px;
+    border-radius:999px;
+  }
+  .oos .qty button,
+  .oos .qty input{
+    pointer-events:none;
+    opacity:.6;
+  }
 </style>
 </head>
 <body>
@@ -66,10 +93,9 @@
   <textarea id="rawMessage" rows="6" readonly></textarea>
 </div>
 
-
-
 <script>
 const DEBUG = /[?&]debug=1/.test(location.search);
+
 // ================= CATALOG WITH CATEGORIES =================
 const catalog = {
   "Disposables": {
@@ -159,7 +185,6 @@ const catalog = {
     "HAYATI": {
       "HAYATI NICSALTS 20MG": ["Banana Ice","Berry Lemonade","Black Mint","Blue Fusion","Blue Razz Cherry","Blue Razz Lemonade","Blue Sour Raspberry","Blueberry Cherry Cranberry","Blueberry Raspberry","Blueberry Raspberry Lemon","Bru Ice","Bubblegum Ice","Cherry Cola","Cherry Ice","Cola Ice","Cola Lime","Fizzy Cherry","Fresh Menthol Mijito","Fresh Mint","Gummy Bear","Hbubba","Ice Pop","Juicy Peach","Kiwi Grape Raspberry","Lemon & Lime","Lemon & Mint","Lemon Peach Passion Fruit","Mad Blue","Mango Peach Pineapple","Menthol","Mr. Blue","Mr. Pink","Pineapple Ice","Pink Lemonade","Rainbow","Red Berry Ice","Rocky Candy Orange","Strawberry Jelly Beans","Strawberry Kiwi","Strawberry Mojito","Strawberry Raspberry Ice","Strawberry Watermelon","Strawberry Watermelon Bubblegum","Summer Dream","Tobacco","Triple Mango","Watermelon Ice"],
       "HAYATI NICSALTS 10MG": ["Banana Ice","Berry Lemonade","Black Mint","Blue Fusion","Blue Razz Cherry","Blue Razz Lemonade","Blue Sour Raspberry","Blueberry Cherry Cranberry","Blueberry Raspberry","Blueberry Raspberry Lemon","Bru Ice","Bubblegum Ice","Cherry Cola","Cherry Ice","Cola Ice","Cola Lime","Fizzy Cherry","Fresh Menthol Mijito","Fresh Mint","Gummy Bear","Hbubba","Ice Pop","Juicy Peach","Kiwi Grape Raspberry","Lemon & Lime","Lemon & Mint","Lemon Peach Passion Fruit","Mad Blue","Mango Peach Pineapple","Menthol","Mr. Blue","Mr. Pink","Pineapple Ice","Pink Lemonade","Rainbow","Red Berry Ice","Rocky Candy Orange","Strawberry Jelly Beans","Strawberry Kiwi","Strawberry Mojito","Strawberry Raspberry Ice","Strawberry Watermelon","Strawberry Watermelon Bubblegum","Summer Dream","Tobacco","Triple Mango","Watermelon Ice"],
-      // Keeping these here so all HAYATI liquids are under one brand section
       "HAYATI E-LIQUID 50/50": ["Banana Ice","Blue Razz Cherry","Blue Razz Gummy Bear","Blue Sour Raspberry","Blueberry Cherry Cranberry","Blueberry Raspberry","Fizzy Cherry","Fresh Mint","Juicy Peach","Lemon & Lime","Mr. Blue","Pineapple Ice","Rainbow","Red Apple Ice","Strawberry Raspberry Ice","Summer Dream","Triple Mango","Vimbull Ice","Watermelon Ice","Watermelon Lemon Burst"],
       "HAYATI E-LIQUID 70/30": ["Banana Ice","Blue Razz Cherry","Blue Razz Gummy Bear","Blue Sour Raspberry","Blueberry Cherry Cranberry","Blueberry Raspberry","Fizzy Cherry","Fresh Mint","Juicy Peach","Lemon & Lime","Mr. Blue","Pineapple Ice","Rainbow","Red Apple Ice","Strawberry Raspberry Ice","Summer Dream","Triple Mango","Vimbull Ice","Watermelon Ice","Watermelon Lemon Burst"]
     }
@@ -299,6 +324,11 @@ const catalog = {
 // ================= STATE =================
 window.cart = {}; // { product: [{ flavour, qty }] }
 
+// ================= OUT-OF-STOCK MAP =================
+const OOS = {
+  "HAYATI PM 6K KITS": new Set(["Cherry Berry"])
+};
+
 // ================= Helpers =================
 function renderGroup(container, group, category){
   const productNames = Object.keys(group);
@@ -342,6 +372,17 @@ function renderGroup(container, group, category){
         const minus = document.createElement('button'); minus.textContent='-';
         const qty = document.createElement('input'); qty.type='number'; qty.min='0'; qty.value='0';
         const plus = document.createElement('button'); plus.textContent='+';
+
+        // ---- OOS handling ----
+        const isOOS = OOS[name] && OOS[name].has(option);
+        if(isOOS){
+          row.classList.add('oos');
+          minus.disabled = true;
+          plus.disabled = true;
+          qty.disabled = true;
+        }
+        // ----------------------
+
         function setQty(v){
           const n = Math.max(0, parseInt(v||0, 10));
           qty.value = n;
@@ -403,7 +444,7 @@ function renderGroup(container, group, category){
         brand.append(head, content);
         container.appendChild(brand);
       }
-      // NEW: Brand collapsibles for Pods (OXVA, Vaporesso)
+      // Brand collapsibles for Pods (OXVA, Vaporesso)
       else if(category === 'Pods' && (name === 'OXVA' || name === 'Vaporesso')){
         const brand = document.createElement('div');
         brand.className = 'brand';
@@ -432,7 +473,7 @@ function renderGroup(container, group, category){
         brand.append(head, content);
         container.appendChild(brand);
       }
-      // NEW: Brand collapsibles for Nicsalts (ELUX, HAYATI, BAR JUICE)
+      // Brand collapsibles for Nicsalts (ELUX, HAYATI, BAR JUICE)
       else if(category === 'Nicsalts' && (name === 'ELUX' || name === 'HAYATI' || name === 'BAR JUICE')){
         const brand = document.createElement('div');
         brand.className = 'brand';
@@ -454,7 +495,6 @@ function renderGroup(container, group, category){
           const open = content.style.display === 'block';
           document.querySelectorAll('.brand-content').forEach(el=> el.style.display='none');
           document.querySelectorAll('.brand .head button').forEach(b=> {
-            // Reset respective labels depending on section
             const parentBrand = b.previousSibling && b.previousSibling.textContent;
             if(parentBrand === 'ELUX' || parentBrand === 'HAYATI' || parentBrand === 'BAR JUICE'){
               b.textContent = 'Show products';
@@ -526,7 +566,6 @@ function updateSummary(){
 }
 
 document.getElementById('custName').addEventListener('input', updateSummary);
-
 document.getElementById('custNumber').addEventListener('input', updateSummary);
 
 // ================= MESSAGE =================
@@ -759,3 +798,4 @@ document.getElementById('sendBtn').addEventListener('click', function(){
 </script>
 </body>
 </html>
+```
