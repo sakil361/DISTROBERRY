@@ -204,6 +204,10 @@ const catalog = {
     },
     "GOTEK": {
       "ASPIRE PODS": ["0.6 Ω","0.8 Ω"]
+       },
+    "GEEKVAPE": {
+      "Q PODS": ["0.6 Ω","0.8 Ω"],
+      "Z XM COIL": ["0.4"]
        }
   },
 
@@ -474,7 +478,7 @@ function renderGroup(container, group, category){
         container.appendChild(brand);
       }
       // Brand collapsibles for Pods (OXVA, Vaporesso)
-   else if (category === 'Pods' && (name === 'OXVA' || name === 'Vaporesso' || name === 'GOTEK')) {
+   else if (category === 'Pods' && (name === 'OXVA' || name === 'Vaporesso' || name === 'GOTEK'|| name === 'GEEKVAPE' )) {
     const brand = document.createElement('div');
     brand.className = 'brand';
     const head = document.createElement('div');
