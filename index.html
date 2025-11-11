@@ -214,6 +214,9 @@ const catalog = {
       "V MATE PODS": ["0.4 Ω","0.7 Ω","1 Ω"],
       "PNP X COIL": ["0.15","0.2","0.3","0.45","0.6","0.8","1"],
       },
+    "HAYATI QUOKKA": {
+      "QUOKKA PODS": ["0.6 Ω","0.8 Ω"],
+      },
     "CALIBURN": {
       "G3 PODS": ["0.6 Ω","0.9 Ω"]
   }
@@ -485,7 +488,7 @@ function renderGroup(container, group, category){
         container.appendChild(brand);
       }
       // Brand collapsibles for Pods (OXVA, Vaporesso)
-   else if (category === 'Pods' && (name === 'OXVA' || name === 'Vaporesso' || name === 'GOTEK'|| name === 'GEEKVAPE'|| name === 'VOOPOO'|| name === 'CALIBURN' )) {
+   else if (category === 'Pods' && (name === 'OXVA' || name === 'Vaporesso' || name === 'GOTEK'|| name === 'GEEKVAPE'|| name === 'VOOPOO'|| name === 'CALIBURN'|| name === 'HAYATI QUOKKA' )) {
     const brand = document.createElement('div');
     brand.className = 'brand';
     const head = document.createElement('div');
