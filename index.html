@@ -188,7 +188,7 @@ const catalog = {
     }
   },
 
-  // ====== PODS GROUPED INTO OXVA + VAPORESSO ======
+  // ====== PODS GROUPED INTO OXVA + VAPORESSO + GOTEK ======
   "Pods": {
     "OXVA": {
       "OXVA XLIM PODS": ["0.4 Ω","0.6 Ω","0.8 Ω","1.0 Ω","1.2 Ω"],
@@ -201,7 +201,10 @@ const catalog = {
       "VAPORESSO LUXE X PODS": ["0.3 Ω","0.4 Ω","0.6 Ω","0.8 Ω"],
       "VAPORESSO DUAL VIBE PODS": ["0.6/0.8 Ω"],
       "VAPORESSO ARMOUR G PODS": ["5ML"]
-    }
+    },
+    "GOTEK": {
+      "ASPIRE PODS": ["0.6 Ω","0.8 Ω"]
+       }
   },
 
   "Kits": {
@@ -471,34 +474,34 @@ function renderGroup(container, group, category){
         container.appendChild(brand);
       }
       // Brand collapsibles for Pods (OXVA, Vaporesso)
-      else if(category === 'Pods' && (name === 'OXVA' || name === 'Vaporesso')){
-        const brand = document.createElement('div');
-        brand.className = 'brand';
-        const head = document.createElement('div');
-        head.className = 'head';
-        const h2 = document.createElement('h2'); h2.textContent = name;
-        const toggle = document.createElement('button');
-        toggle.textContent = 'Show pods';
-        toggle.dataset.showLabel = 'Show pods';
-        toggle.dataset.hideLabel = 'Hide pods';
-        head.append(h2, toggle);
-        const content = document.createElement('div');
-        content.className = 'brand-content';
+   else if (category === 'Pods' && (name === 'OXVA' || name === 'Vaporesso' || name === 'GOTEK')) {
+    const brand = document.createElement('div');
+    brand.className = 'brand';
+    const head = document.createElement('div');
+    head.className = 'head';
+    const h2 = document.createElement('h2'); h2.textContent = name;
+    const toggle = document.createElement('button');
+    toggle.textContent = 'Show pods';
+    toggle.dataset.showLabel = 'Show pods';
+    toggle.dataset.hideLabel = 'Hide pods';
+    head.append(h2, toggle);
+    const content = document.createElement('div');
+    content.className = 'brand-content';
 
-        // Render all pod products for this brand inside content
-        renderGroup(content, val, category);
+    renderGroup(content, val, category);
 
-        head.addEventListener('click', ()=>{
-          const open = content.style.display === 'block';
-          document.querySelectorAll('.brand-content').forEach(el=> el.style.display='none');
-          document.querySelectorAll('.brand .head button').forEach(b=> b.textContent = b.dataset.showLabel || 'Show pods');
-          content.style.display = open ? 'none' : 'block';
-          toggle.textContent = open ? (toggle.dataset.showLabel||'Show pods') : (toggle.dataset.hideLabel||'Hide pods');
-        });
+    head.addEventListener('click', ()=> {
+        const open = content.style.display === 'block';
+        document.querySelectorAll('.brand-content').forEach(el=> el.style.display='none');
+        document.querySelectorAll('.brand .head button').forEach(b=> b.textContent = 'Show pods');
+        content.style.display = open ? 'none' : 'block';
+        toggle.textContent = open ? 'Show pods' : 'Hide pods';
+    });
 
-        brand.append(head, content);
-        container.appendChild(brand);
-      }
+    brand.append(head, content);
+    container.appendChild(brand);
+}
+
       // Brand collapsibles for Nicsalts (ELUX, HAYATI, BAR JUICE)
       else if(category === 'Nicsalts' && (name === 'ELUX' || name === 'HAYATI' || name === 'BAR JUICE')){
         const brand = document.createElement('div');
