@@ -65,14 +65,8 @@
 <header>
   <div class="title">Place Your Order <span class="badge">WhatsApp: +44 7466 492227</span></div>
   <input id="bizNumber" type="tel" value="447466492227" style="display:none;" />
-  <div class="row">
-    <input id="custName" type="text" placeholder="Customer name (required)" required />
-    <input id="custNumber" type="tel" placeholder="Customer number (required)" required />
-  </div>
-  <div class="row">
-    <textarea id="notes" placeholder="Additional info (optional)"></textarea>
-  </div>
 </header>
+
 
 <div class="container" id="list"></div>
 
@@ -89,6 +83,31 @@
   </ol>
   <textarea id="rawMessage" rows="6" readonly></textarea>
 </div>
+<!-- Checkout Modal (no preview) -->
+<style>
+  /* Hide dialog unless opened via JS */
+  dialog:not([open]) { display: none; }
+</style>
+
+<dialog id="checkoutDialog">
+  <div class="modal-header">
+    <h3>Enter details to send order</h3>
+    <button id="closeDialog" class="btn-ghost" formmethod="dialog">✕</button>
+  </div>
+
+  <div class="row">
+    <input id="custNameModal" type="text" placeholder="Customer name (required)" required />
+    <input id="custNumberModal" type="tel" inputmode="tel" placeholder="Customer number (required)" required />
+  </div>
+  <div class="row">
+    <textarea id="notesModal" placeholder="Additional info (optional)"></textarea>
+  </div>
+
+  <div class="modal-actions">
+    <button id="cancelDialog" class="btn-ghost" formmethod="dialog">Cancel</button>
+    <button id="confirmSend" class="btn enabled">Send Order via WhatsApp</button>
+  </div>
+</dialog>
 
 <script>
 const DEBUG = /[?&]debug=1/.test(location.search);
@@ -637,34 +656,37 @@ function render(){
 }
 
 // ================= SUMMARY / VALIDATION =================
-function requiredFilled(){
-  const name = document.getElementById('custName').value.trim();
-  const num  = document.getElementById('custNumber').value.trim();
-  return !!(name && num);
-}
+function requiredFilled(){ return true; }
 
 function updateSummary(){
   const summary = document.getElementById('summary');
   const sendBtn = document.getElementById('sendBtn');
   const items = [];
+
   Object.entries(window.cart).forEach(([product, arr])=>{
     arr.forEach(({flavour, qty})=> items.push(product + ' — ' + flavour + ' x ' + qty));
   });
-  if(items.length===0){ summary.textContent='No items selected yet.'; }
-  else { summary.textContent = items.length + ' item(s) ready to send.'; }
 
+  if(items.length===0){
+    summary.textContent='No items selected yet.';
+  } else {
+    summary.textContent = items.length + ' item(s) ready to send.';
+  }
+
+  // Safely handle (now-removed) header inputs
   const nameEl = document.getElementById('custName');
   const numEl  = document.getElementById('custNumber');
-  nameEl.classList.toggle('ok', !!nameEl.value.trim());
-  numEl.classList.toggle('ok',  !!numEl.value.trim());
+  if (nameEl) nameEl.classList.toggle('ok', !!nameEl.value.trim());
+  if (numEl)  numEl.classList.toggle('ok',  !!numEl.value.trim());
 
-  const enable = requiredFilled() && items.length>0;
+  // Enable based on cart only (fields collected in modal)
+  const enable = items.length > 0;
   sendBtn.disabled = !enable;
   sendBtn.classList.toggle('enabled', enable);
 }
 
-document.getElementById('custName').addEventListener('input', updateSummary);
-document.getElementById('custNumber').addEventListener('input', updateSummary);
+
+
 
 // ================= MESSAGE =================
 function buildMessage(){
@@ -894,6 +916,89 @@ document.getElementById('sendBtn').addEventListener('click', function(){
   panelEl.textContent = out.join(' | ');
 })();
 </script>
+  <script>
+(function () {
+  // --- Helpers ---
+  function hasItems() {
+    return Object.values(window.cart || {}).some(arr => Array.isArray(arr) && arr.length > 0);
+  }
+  function normalizePhoneIntl(raw) {
+    const d = (raw||'').replace(/\D/g,'');
+    if (d.startsWith('00')) return d.slice(2);
+    if (d.startsWith('0'))  return '44' + d.slice(1);
+    return d;
+  }
+
+  // --- 1) Make updateSummary ignore name/number and enable by cart only ---
+  if (typeof window.updateSummary === 'function') {
+    const old = window.updateSummary;
+    window.updateSummary = function(){
+      try { old.apply(this, arguments); } catch(_) {}
+      const itemsCount = Object.values(window.cart || {}).reduce((n, arr) => n + (Array.isArray(arr) ? arr.length : 0), 0);
+      const btn = document.getElementById('sendBtn');
+      if (btn) { btn.disabled = itemsCount === 0; btn.classList.toggle('enabled', itemsCount > 0); }
+    };
+    try { window.updateSummary(); } catch(_) {}
+  }
+
+  // Also neutralize any old "requiredFilled" checks (fields moved to modal)
+  window.requiredFilled = function(){ return true; };
+
+  // --- 2) Replace the main button's old click handler with our modal opener ---
+  const sendBtn = document.getElementById('sendBtn');
+  if (sendBtn) {
+    const replacement = sendBtn.cloneNode(true);
+    sendBtn.parentNode.replaceChild(replacement, sendBtn);
+    replacement.addEventListener('click', () => {
+      if (!hasItems()) { alert('Please add at least one item.'); return; }
+      const dlg = document.getElementById('checkoutDialog');
+      if (!dlg) { alert('Checkout dialog not found.'); return; }
+      if (typeof dlg.showModal === 'function') dlg.showModal();
+      else dlg.setAttribute('open',''); // fallback for older browsers
+    });
+  }
+
+  // --- 3) Modal buttons ---
+  const dlgEl = document.getElementById('checkoutDialog');
+  document.getElementById('closeDialog')?.addEventListener('click', () => { dlgEl?.close?.(); dlgEl?.removeAttribute('open'); });
+  document.getElementById('cancelDialog')?.addEventListener('click', () => { dlgEl?.close?.(); dlgEl?.removeAttribute('open'); });
+
+  document.getElementById('confirmSend')?.addEventListener('click', () => {
+    const name  = document.getElementById('custNameModal')?.value?.trim();
+    const num   = document.getElementById('custNumberModal')?.value?.trim();
+    const notes = document.getElementById('notesModal')?.value?.trim();
+    if (!name || !num) { alert('Please enter name and number.'); return; }
+
+    // Build WhatsApp message
+    const lines = [];
+    lines.push(`Name: ${name}`);
+    lines.push(`Customer Number: ${num}`);
+    lines.push('Order:');
+    Object.entries(window.cart || {}).forEach(([product, arr]) => {
+      lines.push(`- ${product}`);
+      (arr || []).forEach(({ flavour, qty }) => lines.push(`  - ${flavour} x${qty}`));
+    });
+    if (notes) lines.push(`Notes: ${notes}`);
+
+    // Send via WhatsApp
+    const phone = normalizePhoneIntl(document.getElementById('bizNumber')?.value || '447466492227');
+    const text  = encodeURIComponent(lines.join('\n'));
+    const waMe  = `https://wa.me/${phone}?text=${text}`;
+    const api   = `https://api.whatsapp.com/send?phone=${phone}&text=${text}`;
+    // Open both to maximize compatibility
+    try { window.open(waMe, '_blank'); } catch(_) {}
+    try { window.open(api, '_blank'); } catch(_) {}
+
+    // Optional: if your page has fallbackBox helpers, wire them
+    if (typeof window.setFallbackLinks === 'function') {
+      try { window.setFallbackLinks(lines.join('\n'), phone); } catch(_) {}
+    }
+
+    dlgEl?.close?.(); dlgEl?.removeAttribute('open');
+  });
+})();
+</script>
+
 </body>
 </html>
 ```
