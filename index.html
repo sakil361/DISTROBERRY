@@ -85,8 +85,46 @@
 </div>
 <!-- Checkout Modal (no preview) -->
 <style>
-  /* Hide dialog unless opened via JS */
+  /* Modal — match site theme */
   dialog:not([open]) { display: none; }
+  dialog{
+    background: var(--card);
+    color: #e9f0f6;
+    border: 1px solid #1f2732;
+    border-radius: 16px;
+    padding: 16px;
+    max-width: 560px;
+    width: 96vw;
+    box-shadow: 0 12px 30px rgba(0,0,0,.45);
+  }
+  dialog::backdrop{ background: rgba(0,0,0,.6); }
+
+  .modal-header{ display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; }
+  .modal-header h3{ margin:0; font-size:20px; }
+
+  .modal-actions{ display:flex; gap:8px; margin-top:12px; }
+
+  /* Buttons inside dialog */
+  .btn-ghost{
+    background:#162232;
+    border:1px solid #263448;
+    color:#cfe0f5;
+    border-radius:10px;
+    padding:10px 12px;
+    cursor:pointer;
+  }
+  #confirmSend{
+    background:var(--accent);
+    color:#0b0f14;
+    border:none;
+    border-radius:10px;
+    padding:12px 14px;
+    font-weight:700;
+    cursor:pointer;
+  }
+
+  /* Inputs in dialog reuse your global styles, but ensure full width on narrow screens */
+  #checkoutDialog input, #checkoutDialog textarea{ width:100%; }
 </style>
 
 <dialog id="checkoutDialog">
