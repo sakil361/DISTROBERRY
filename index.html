@@ -5,6 +5,15 @@
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Order Picker + WhatsApp Send</title>
 <style>
+
+  .price-tag{
+  font-size:14px;
+  color:#9fb0c3;
+  margin-left:auto;
+  margin-right:12px;
+  opacity:0.9;
+}
+
   :root { --bg:#0b0f14; --card:#121821; --muted:#9fb0c3; --accent:#26d07c; }
   *{box-sizing:border-box}
   body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Helvetica,Arial,sans-serif;background:var(--bg);color:#e9f0f6}
@@ -436,6 +445,17 @@ const OOS = {
   "SKE 600 KITS": new Set(["Apple Peach","Banana Ice","Blueberry Cherry Cranberry","Blueberry Raspberries","Bull Ice","Fresh Menthol Mojito","Lemon Peach Passionfruit","Mango Ice","Peach Ice","Sour Pineapple Ice","Strawberry Burst","Strawberry Kiwi","Strawberry Raspberry","Tobacco","VMT Ice","Watermelon Strawberry"])
 };
 
+  // ====== PRICES (ONLY ADD WHAT YOU WANT TO SHOW) ======
+const PRICE = {
+  // Example format (remove the // when you’re ready to use):
+ "ELUX Nicsalts 5mg": 13,
+  "ELUX Nicsalts 10mg": 13,
+  "ELUX Nicsalts 20mg": 13,
+ 
+};
+
+const money = n => `£${(Number(n) || 0).toFixed(2)}`;
+
 
 
 // ================= Helpers =================
@@ -457,21 +477,34 @@ function renderGroup(container, group, category){
       wrap.className = 'product';
 
       const head = document.createElement('div');
-      head.className = 'head';
-      const h2 = document.createElement('h2'); h2.textContent = name; h2.style.margin='0'; h2.style.fontSize='18px';
+head.className = 'head';
 
-      const isColor = (category === 'Kits');
-      const isSize = (category === 'Pods');
-      const isProducts = (category === 'Smoking');
-      const showLabel = isColor ? 'Show colours' : (isSize ? 'Show sizes' : (isProducts ? 'Show products' : 'Show flavours'));
-      const hideLabel = isColor ? 'Hide colours' : (isSize ? 'Hide sizes' : (isProducts ? 'Hide products' : 'Hide flavours'));
+const h2 = document.createElement('h2');
+h2.textContent = name;
+h2.style.margin = '0';
+h2.style.fontSize = '18px';
 
-      const toggle = document.createElement('button');
-      toggle.textContent = showLabel;
-      toggle.dataset.mode = isColor ? 'colours' : (isSize ? 'sizes' : 'flavours');
-      toggle.dataset.showLabel = showLabel;
-      toggle.dataset.hideLabel = hideLabel;
-      head.append(h2, toggle);
+head.appendChild(h2);
+
+// 🔹 Only show a price if we have one in PRICE
+if (PRICE[name] != null) {
+  const priceEl = document.createElement('span');
+  priceEl.className = 'price-tag';
+  priceEl.textContent = money(PRICE[name]);
+  head.appendChild(priceEl);
+}
+
+const isColor = (category === 'Kits');
+const isSize = (category === 'Pods');
+const isProducts = (category === 'Smoking');
+const showLabel = isColor ? 'Show colours' : (isSize ? 'Show sizes' : (isProducts ? 'Show products' : 'Show flavours'));
+const hideLabel = isColor ? 'Hide colours' : (isSize ? 'Hide sizes' : (isProducts ? 'Hide products' : 'Hide flavours'));
+
+const toggle = document.createElement('button');
+toggle.textContent = showLabel;
+// ...
+head.appendChild(toggle);
+
 
       const box = document.createElement('div'); box.className='flavours';
       val.forEach(option=>{
