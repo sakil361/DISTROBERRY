@@ -507,7 +507,7 @@ if (PRICE[name] != null) {
 
 const isColor = (category === 'Kits');
 const isSize = (category === 'Pods');
-const isProducts = (category === 'Smoking');
+const isProducts = (category === 'Smoking' || category === 'Misc Items');
 const showLabel = isColor ? 'Show colours' : (isSize ? 'Show sizes' : (isProducts ? 'Show products' : 'Show flavours'));
 const hideLabel = isColor ? 'Hide colours' : (isSize ? 'Hide sizes' : (isProducts ? 'Hide products' : 'Hide flavours'));
 
