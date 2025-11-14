@@ -5,6 +5,14 @@
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Order Picker + WhatsApp Send</title>
 <style>
+
+  .product.open,
+.brand.open{
+  background:#151e30;          /* darker card when open */
+  border-color:#2f81ff;        /* subtle blue border */
+  box-shadow:0 0 0 1px #2f81ff44;
+}
+
 /* Product image size inside Smoking chips */
 .chip-img{
   width:90px;
@@ -676,12 +684,29 @@ head.appendChild(toggle);
 
 
       head.addEventListener('click', ()=>{
-        const open = box.style.display==='block';
-        document.querySelectorAll('.flavours').forEach(el=> el.style.display='none');
-        document.querySelectorAll('.product .head button').forEach(b=> { b.textContent = b.dataset.showLabel || 'Show flavours'; });
-        box.style.display = open ? 'none' : 'block';
-        toggle.textContent = open ? (toggle.dataset.showLabel || showLabel) : (toggle.dataset.hideLabel || hideLabel);
-      });
+  const open = box.style.display === 'block';
+
+  // Close all other flavour boxes and remove highlight
+  document.querySelectorAll('.flavours').forEach(el => el.style.display = 'none');
+  document.querySelectorAll('.product').forEach(card => card.classList.remove('open'));
+  document.querySelectorAll('.product .head button').forEach(b => {
+    b.textContent = b.dataset.showLabel || 'Show flavours';
+  });
+
+  // Toggle this one
+  box.style.display = open ? 'none' : 'block';
+  toggle.textContent = open
+    ? (toggle.dataset.showLabel || showLabel)
+    : (toggle.dataset.hideLabel || hideLabel);
+
+  // Add / remove highlight class
+  if (!open) {
+    wrap.classList.add('open');
+  } else {
+    wrap.classList.remove('open');
+  }
+});
+
 
       wrap.append(head, box);
       container.appendChild(wrap);
@@ -705,12 +730,24 @@ head.appendChild(toggle);
         renderGroup(content, val, category);
 
         head.addEventListener('click', ()=>{
-          const open = content.style.display === 'block';
-          document.querySelectorAll('.brand-content').forEach(el=> el.style.display='none');
-          document.querySelectorAll('.brand .head button').forEach(b=> b.textContent = b.dataset.showLabel || 'Show kits');
-          content.style.display = open ? 'none' : 'block';
-          toggle.textContent = open ? (toggle.dataset.showLabel||'Show kits') : (toggle.dataset.hideLabel||'Hide kits');
-        });
+  const open = content.style.display === 'block';
+
+  document.querySelectorAll('.brand-content').forEach(el => el.style.display = 'none');
+  document.querySelectorAll('.brand').forEach(card => card.classList.remove('open'));
+  document.querySelectorAll('.brand .head button').forEach(b => {
+    b.textContent = b.dataset.showLabel || 'Show kits';
+  });
+
+  content.style.display = open ? 'none' : 'block';
+  toggle.textContent = open
+    ? (toggle.dataset.showLabel || 'Show kits')
+    : (toggle.dataset.hideLabel || 'Hide kits');
+
+  if (!open) {
+    brand.classList.add('open');
+  }
+});
+
 
         brand.append(head, content);
         container.appendChild(brand);
@@ -741,15 +778,22 @@ else if (category === 'Disposables' && (
   content.className = 'brand-content';
   renderGroup(content, val, category);
 
-  head.addEventListener('click', () => {
-    const open = content.style.display === 'block';
-    document.querySelectorAll('.brand-content').forEach(el => el.style.display = 'none');
-    document.querySelectorAll('.brand .head button')
-      .forEach(b => b.textContent = b.dataset.showLabel || 'Show products');
+ head.addEventListener('click', () => {
+  const open = content.style.display === 'block';
 
-    content.style.display = open ? 'none' : 'block';
-    toggle.textContent = open ? toggle.dataset.showLabel : toggle.dataset.hideLabel;
-  });
+  document.querySelectorAll('.brand-content').forEach(el => el.style.display = 'none');
+  document.querySelectorAll('.brand').forEach(card => card.classList.remove('open'));
+  document.querySelectorAll('.brand .head button')
+    .forEach(b => b.textContent = b.dataset.showLabel || 'Show products');
+
+  content.style.display = open ? 'none' : 'block';
+  toggle.textContent = open ? toggle.dataset.showLabel : toggle.dataset.hideLabel;
+
+  if (!open) {
+    brand.classList.add('open');
+  }
+});
+
 
   brand.append(head, content);
   container.appendChild(brand);
@@ -772,13 +816,21 @@ else if (category === 'Disposables' && (
 
     renderGroup(content, val, category);
 
-    head.addEventListener('click', ()=> {
-        const open = content.style.display === 'block';
-        document.querySelectorAll('.brand-content').forEach(el=> el.style.display='none');
-        document.querySelectorAll('.brand .head button').forEach(b=> b.textContent = 'Show pods');
-        content.style.display = open ? 'none' : 'block';
-        toggle.textContent = open ? 'Show pods' : 'Hide pods';
-    });
+   head.addEventListener('click', ()=> {
+  const open = content.style.display === 'block';
+
+  document.querySelectorAll('.brand-content').forEach(el => el.style.display = 'none');
+  document.querySelectorAll('.brand').forEach(card => card.classList.remove('open'));
+  document.querySelectorAll('.brand .head button').forEach(b => b.textContent = 'Show pods');
+
+  content.style.display = open ? 'none' : 'block';
+  toggle.textContent = open ? 'Show pods' : 'Hide pods';
+
+  if (!open) {
+    brand.classList.add('open');
+  }
+});
+
 
     brand.append(head, content);
     container.appendChild(brand);
@@ -802,24 +854,32 @@ else if (category === 'Disposables' && (
         // Render all products for this brand under Nicsalts
         renderGroup(content, val, category);
 
-        head.addEventListener('click', ()=>{
-          const open = content.style.display === 'block';
-          document.querySelectorAll('.brand-content').forEach(el=> el.style.display='none');
-          document.querySelectorAll('.brand .head button').forEach(b=> {
-            const parentBrand = b.previousSibling && b.previousSibling.textContent;
-            if(parentBrand === 'ELUX' || parentBrand === 'HAYATI' || parentBrand === 'BAR JUICE'){
-              b.textContent = 'Show products';
-              b.dataset.showLabel = 'Show products';
-              b.dataset.hideLabel = 'Hide products';
-            } else {
-              b.textContent = 'Show flavours';
-              b.dataset.showLabel = 'Show flavours';
-              b.dataset.hideLabel = 'Hide flavours';
-            }
-          });
-          content.style.display = open ? 'none' : 'block';
-          toggle.textContent = open ? 'Show products' : 'Hide products';
-        });
+       head.addEventListener('click', ()=>{
+  const open = content.style.display === 'block';
+
+  document.querySelectorAll('.brand-content').forEach(el => el.style.display = 'none');
+  document.querySelectorAll('.brand').forEach(card => card.classList.remove('open'));
+  document.querySelectorAll('.brand .head button').forEach(b => {
+    const parentBrand = b.previousSibling && b.previousSibling.textContent;
+    if (parentBrand === 'ELUX' || parentBrand === 'HAYATI' || parentBrand === 'BAR JUICE') {
+      b.textContent = 'Show products';
+      b.dataset.showLabel = 'Show products';
+      b.dataset.hideLabel = 'Hide products';
+    } else {
+      b.textContent = 'Show flavours';
+      b.dataset.showLabel = 'Show flavours';
+      b.dataset.hideLabel = 'Hide flavours';
+    }
+  });
+
+  content.style.display = open ? 'none' : 'block';
+  toggle.textContent = open ? 'Show products' : 'Hide products';
+
+  if (!open) {
+    brand.classList.add('open');
+  }
+});
+
 
         brand.append(head, content);
         container.appendChild(brand);
