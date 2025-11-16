@@ -13,6 +13,14 @@
   box-shadow:0 0 0 1px #2f81ff44;
 }
 
+  .product.open,
+.brand.open{
+  border-color: #26d07c;       /* accent */
+  box-shadow: 0 0 0 1px #26d07c55;
+  background:#151d29;
+}
+
+
 /* Product image size inside Smoking chips */
 .chip-img{
   width:90px;
@@ -572,7 +580,8 @@ const money = n => `£${(Number(n) || 0).toFixed(2)}`;
 
 
 // ================= Helpers =================
-function renderGroup(container, group, category){
+
+  function renderGroup(container, group, category){
   const productNames = Object.keys(group);
   if(productNames.length === 0){
     const empty = document.createElement('div');
@@ -582,310 +591,374 @@ function renderGroup(container, group, category){
     container.appendChild(empty);
     return;
   }
-  productNames.forEach(name=>{
+
+  productNames.forEach(name => {
     const val = group[name];
-    if(Array.isArray(val)){
-      // Render product card
+
+    // ========== SIMPLE PRODUCT WITH OPTIONS (flavours / colours / sizes / products) ==========
+    if (Array.isArray(val)) {
       const wrap = document.createElement('div');
       wrap.className = 'product';
 
       const head = document.createElement('div');
-head.className = 'head';
+      head.className = 'head';
 
-const h2 = document.createElement('h2');
-h2.textContent = name;
-h2.style.margin = '0';
-h2.style.fontSize = '18px';
+      const h2 = document.createElement('h2');
+      h2.textContent = name;
+      h2.style.margin = '0';
+      h2.style.fontSize = '18px';
+      head.appendChild(h2);
 
-head.appendChild(h2);
+      // Optional price
+      if (PRICE[name] != null) {
+        const priceEl = document.createElement('span');
+        priceEl.className = 'price-tag';
+        priceEl.textContent = money(PRICE[name]);
+        head.appendChild(priceEl);
+      }
 
-// 🔹 Only show a price if we have one in PRICE
-if (PRICE[name] != null) {
-  const priceEl = document.createElement('span');
-  priceEl.className = 'price-tag';
-  priceEl.textContent = money(PRICE[name]);
-  head.appendChild(priceEl);
-}
+      const isColor    = (category === 'Kits');
+      const isSize     = (category === 'Pods');
+      const isProducts = (category === 'Smoking' || category === 'Misc Items');
 
-const isColor = (category === 'Kits');
-const isSize = (category === 'Pods');
-const isProducts = (category === 'Smoking' || category === 'Misc Items');
-const showLabel = isColor ? 'Show colours' : (isSize ? 'Show sizes' : (isProducts ? 'Show products' : 'Show flavours'));
-const hideLabel = isColor ? 'Hide colours' : (isSize ? 'Hide sizes' : (isProducts ? 'Hide products' : 'Hide flavours'));
+      const showLabel = isColor
+        ? 'Show colours'
+        : isSize
+          ? 'Show sizes'
+          : isProducts
+            ? 'Show products'
+            : 'Show flavours';
 
-const toggle = document.createElement('button');
-toggle.textContent = showLabel;
-// ...
-head.appendChild(toggle);
+      const hideLabel = isColor
+        ? 'Hide colours'
+        : isSize
+          ? 'Hide sizes'
+          : isProducts
+            ? 'Hide products'
+            : 'Hide flavours';
 
+      const toggle = document.createElement('button');
+      toggle.textContent = showLabel;
+      toggle.dataset.showLabel = showLabel;
+      toggle.dataset.hideLabel = hideLabel;
+      head.appendChild(toggle);
 
-      const box = document.createElement('div'); box.className='flavours';
-     val.forEach(option=>{
-  const row = document.createElement('div');
-  row.className = 'chip';
+      const box = document.createElement('div');
+      box.className = 'flavours';
 
-  // 🔹 If this is in the Smoking category and we have an image, show it
-  let imgUrl = undefined;
-  if (category === 'Smoking') {
-    imgUrl = IMAGE[option];
-  }
+      // ---- Options list ----
+      val.forEach(option => {
+        const row = document.createElement('div');
+        row.className = 'chip';
 
-  if (imgUrl) {
-    const img = document.createElement('img');
-    img.src = imgUrl;
-    img.alt = option;
-    img.className = 'chip-img';
-    row.appendChild(img); // image on the left
-  }
+        // Image only for Smoking category if found
+        let imgUrl;
+        if (category === 'Smoking') {
+          imgUrl = IMAGE[option];
+        }
+        if (imgUrl) {
+          const img = document.createElement('img');
+          img.src = imgUrl;
+          img.alt = option;
+          img.className = 'chip-img';
+          row.appendChild(img);
+        }
 
-  const label = document.createElement('div');
-  label.textContent = option;
-  label.style.flex = '1';
+        const label = document.createElement('div');
+        label.textContent = option;
+        label.style.flex = '1';
 
-  const qtyWrap = document.createElement('div');
-  qtyWrap.className = 'qty';
+        const qtyWrap = document.createElement('div');
+        qtyWrap.className = 'qty';
 
-  const minus = document.createElement('button'); minus.textContent='-';
-  const qty = document.createElement('input'); qty.type='number'; qty.min='0'; qty.value='0';
-  const plus = document.createElement('button'); plus.textContent='+';
+        const minus = document.createElement('button'); minus.textContent = '-';
+        const qty   = document.createElement('input');  qty.type = 'number'; qty.min = '0'; qty.value = '0';
+        const plus  = document.createElement('button'); plus.textContent = '+';
 
-  // ---- OOS handling (keep your existing code) ----
-  const isOOS = OOS[name] && OOS[name].has(option);
-  if(isOOS){
-    row.classList.add('oos');
-    minus.disabled = true;
-    plus.disabled = true;
-    qty.disabled = true;
-  }
+        // Out of stock handling
+        const isOOS = OOS[name] && OOS[name].has(option);
+        if (isOOS) {
+          row.classList.add('oos');
+          minus.disabled = true;
+          plus.disabled  = true;
+          qty.disabled   = true;
+        }
 
-  function setQty(v){
-    const n = Math.max(0, parseInt(v||0, 10));
-    qty.value = n;
-    row.classList.toggle('selected', n>0);
-    if(!window.cart[name]) window.cart[name] = [];
-    const i = window.cart[name].findIndex(x=>x.flavour===option);
-    if(n===0){ if(i>-1) window.cart[name].splice(i,1); }
-    else {
-      if(i>-1) window.cart[name][i].qty = n;
-      else window.cart[name].push({flavour:option, qty:n});
-    }
-    if(window.cart[name] && window.cart[name].length===0) delete window.cart[name];
-    updateSummary();
-  }
+        function setQty(v){
+          const n = Math.max(0, parseInt(v || 0, 10));
+          qty.value = n;
+          row.classList.toggle('selected', n > 0);
+          if (!window.cart[name]) window.cart[name] = [];
+          const i = window.cart[name].findIndex(x => x.flavour === option);
+          if (n === 0) {
+            if (i > -1) window.cart[name].splice(i, 1);
+          } else {
+            if (i > -1) window.cart[name][i].qty = n;
+            else window.cart[name].push({ flavour: option, qty: n });
+          }
+          if (window.cart[name] && window.cart[name].length === 0) delete window.cart[name];
+          updateSummary();
+        }
 
-  minus.addEventListener('click', ()=> setQty(parseInt(qty.value||0,10)-1));
-  plus .addEventListener('click', ()=> setQty(parseInt(qty.value||0,10)+1));
-  qty  .addEventListener('input', ()=> setQty(qty.value));
+        minus.addEventListener('click', () => setQty(parseInt(qty.value || 0, 10) - 1));
+        plus .addEventListener('click', () => setQty(parseInt(qty.value || 0, 10) + 1));
+        qty  .addEventListener('input', () => setQty(qty.value));
 
-  qtyWrap.append(minus, qty, plus);
-  row.append(label, qtyWrap);
-  box.appendChild(row);
-});
+        qtyWrap.append(minus, qty, plus);
+        row.append(label, qtyWrap);
+        box.appendChild(row);
+      });
 
+      // ---- Open / close product card with highlight ----
+      head.addEventListener('click', () => {
+        const isOpenNow = box.style.display === 'block';
+        const willOpen  = !isOpenNow;
 
-      head.addEventListener('click', ()=>{
-  const open = box.style.display === 'block';
+        // Close all other products
+        document.querySelectorAll('.flavours').forEach(el => el.style.display = 'none');
+        document.querySelectorAll('.product').forEach(card => card.classList.remove('open'));
+        document.querySelectorAll('.product .head button').forEach(b => {
+          const show = b.dataset.showLabel || 'Show flavours';
+          b.textContent = show;
+        });
 
-  // Close all other flavour boxes and remove highlight
-  document.querySelectorAll('.flavours').forEach(el => el.style.display = 'none');
-  document.querySelectorAll('.product').forEach(card => card.classList.remove('open'));
-  document.querySelectorAll('.product .head button').forEach(b => {
-    b.textContent = b.dataset.showLabel || 'Show flavours';
-  });
-
-  // Toggle this one
-  box.style.display = open ? 'none' : 'block';
-  toggle.textContent = open
-    ? (toggle.dataset.showLabel || showLabel)
-    : (toggle.dataset.hideLabel || hideLabel);
-
-  // Add / remove highlight class
-  if (!open) {
-    wrap.classList.add('open');
-  } else {
-    wrap.classList.remove('open');
-  }
-});
-
+        if (willOpen) {
+          box.style.display = 'block';
+          toggle.textContent = toggle.dataset.hideLabel || hideLabel;
+          wrap.classList.add('open');
+        } else {
+          box.style.display = 'none';
+          toggle.textContent = toggle.dataset.showLabel || showLabel;
+          wrap.classList.remove('open');
+        }
+      });
 
       wrap.append(head, box);
       container.appendChild(wrap);
-    } else if(val && typeof val === 'object'){
-      // Brand collapsibles for Kits
-      if(category === 'Kits' && (name === 'OXVA' || name === 'VAPORESSO' || name === 'UWELL' || name === 'GEEKVAPE' || name === 'INNOKIN' || name === 'ASPIRE' || name === 'VOOPOO' || name === 'HAYATI QUOKKA')){
-        const brand = document.createElement('div');
+
+    // ========== BRAND GROUPS (nested objects) ==========
+    } else if (val && typeof val === 'object') {
+
+      // ----- Kits brands -----
+      if (category === 'Kits' && (
+        name === 'OXVA' ||
+        name === 'VAPORESSO' ||
+        name === 'UWELL' ||
+        name === 'GEEKVAPE' ||
+        name === 'INNOKIN' ||
+        name === 'ASPIRE' ||
+        name === 'VOOPOO' ||
+        name === 'HAYATI QUOKKA'
+      )) {
+        const brand   = document.createElement('div');
         brand.className = 'brand';
+
         const head = document.createElement('div');
         head.className = 'head';
-        const h2 = document.createElement('h2'); h2.textContent = name;
+
+        const h2 = document.createElement('h2');
+        h2.textContent = name;
+
         const toggle = document.createElement('button');
-        toggle.textContent = 'Show kits';
-        toggle.dataset.showLabel = 'Show kits';
-        toggle.dataset.hideLabel = 'Hide kits';
+        toggle.textContent        = 'Show kits';
+        toggle.dataset.showLabel  = 'Show kits';
+        toggle.dataset.hideLabel  = 'Hide kits';
+
         head.append(h2, toggle);
+
         const content = document.createElement('div');
         content.className = 'brand-content';
-
-        // Render all products for this brand inside content
         renderGroup(content, val, category);
 
-        head.addEventListener('click', ()=>{
-  const open = content.style.display === 'block';
+        head.addEventListener('click', () => {
+          const isOpenNow = content.style.display === 'block';
+          const willOpen  = !isOpenNow;
 
-  document.querySelectorAll('.brand-content').forEach(el => el.style.display = 'none');
-  document.querySelectorAll('.brand').forEach(card => card.classList.remove('open'));
-  document.querySelectorAll('.brand .head button').forEach(b => {
-    b.textContent = b.dataset.showLabel || 'Show kits';
-  });
+          document.querySelectorAll('.brand-content').forEach(el => el.style.display = 'none');
+          document.querySelectorAll('.brand').forEach(card => card.classList.remove('open'));
+          document.querySelectorAll('.brand .head button').forEach(b => {
+            const show = b.dataset.showLabel || b.textContent;
+            b.textContent = show;
+          });
 
-  content.style.display = open ? 'none' : 'block';
-  toggle.textContent = open
-    ? (toggle.dataset.showLabel || 'Show kits')
-    : (toggle.dataset.hideLabel || 'Hide kits');
-
-  if (!open) {
-    brand.classList.add('open');
-  }
-});
-
+          if (willOpen) {
+            content.style.display = 'block';
+            toggle.textContent = toggle.dataset.hideLabel || 'Hide kits';
+            brand.classList.add('open');
+          } else {
+            content.style.display = 'none';
+            toggle.textContent = toggle.dataset.showLabel || 'Show kits';
+            brand.classList.remove('open');
+          }
+        });
 
         brand.append(head, content);
         container.appendChild(brand);
-      }
-        // Brand collapsibles for Disposables
-else if (category === 'Disposables' && (
-  name === 'SKE' ||
-  name === 'HAYATI' ||
-  name === 'ELFBAR' ||
-  name === 'CRYSTAL PRO' ||
-  name === 'IVG' ||
-  name === 'PYNE POD' ||
-  name === 'HYOLA'
-)) {
-  const brand = document.createElement('div');
-  brand.className = 'brand';
 
-  const head = document.createElement('div');
-  head.className = 'head';
-  const h2 = document.createElement('h2'); h2.textContent = name;
-  const toggle = document.createElement('button');
-  toggle.textContent = 'Show products';
-  toggle.dataset.showLabel = 'Show products';
-  toggle.dataset.hideLabel = 'Hide products';
-  head.append(h2, toggle);
-
-  const content = document.createElement('div');
-  content.className = 'brand-content';
-  renderGroup(content, val, category);
-
- head.addEventListener('click', () => {
-  const open = content.style.display === 'block';
-
-  document.querySelectorAll('.brand-content').forEach(el => el.style.display = 'none');
-  document.querySelectorAll('.brand').forEach(card => card.classList.remove('open'));
-  document.querySelectorAll('.brand .head button')
-    .forEach(b => b.textContent = b.dataset.showLabel || 'Show products');
-
-  content.style.display = open ? 'none' : 'block';
-  toggle.textContent = open ? toggle.dataset.showLabel : toggle.dataset.hideLabel;
-
-  if (!open) {
-    brand.classList.add('open');
-  }
-});
-
-
-  brand.append(head, content);
-  container.appendChild(brand);
-}
-
-      // Brand collapsibles for Pods (OXVA, Vaporesso)
-   else if (category === 'Pods' && (name === 'OXVA' || name === 'VAPORESSO' || name === 'GOTEK'|| name === 'GEEKVAPE'|| name === 'VOOPOO'|| name === 'CALIBURN'|| name === 'HAYATI QUOKKA'|| name === 'INNOKIN' )) {
-    const brand = document.createElement('div');
-    brand.className = 'brand';
-    const head = document.createElement('div');
-    head.className = 'head';
-    const h2 = document.createElement('h2'); h2.textContent = name;
-    const toggle = document.createElement('button');
-    toggle.textContent = 'Show pods';
-    toggle.dataset.showLabel = 'Show pods';
-    toggle.dataset.hideLabel = 'Hide pods';
-    head.append(h2, toggle);
-    const content = document.createElement('div');
-    content.className = 'brand-content';
-
-    renderGroup(content, val, category);
-
-   head.addEventListener('click', ()=> {
-  const open = content.style.display === 'block';
-
-  document.querySelectorAll('.brand-content').forEach(el => el.style.display = 'none');
-  document.querySelectorAll('.brand').forEach(card => card.classList.remove('open'));
-  document.querySelectorAll('.brand .head button').forEach(b => b.textContent = 'Show pods');
-
-  content.style.display = open ? 'none' : 'block';
-  toggle.textContent = open ? 'Show pods' : 'Hide pods';
-
-  if (!open) {
-    brand.classList.add('open');
-  }
-});
-
-
-    brand.append(head, content);
-    container.appendChild(brand);
-}
-
-      // Brand collapsibles for Nicsalts (ELUX, HAYATI, BAR JUICE)
-      else if(category === 'Nicsalts' && (name === 'ELUX' || name === 'HAYATI' || name === 'BAR JUICE')){
-        const brand = document.createElement('div');
+      // ----- Disposables brands -----
+      } else if (category === 'Disposables' && (
+        name === 'SKE' ||
+        name === 'HAYATI' ||
+        name === 'ELFBAR' ||
+        name === 'CRYSTAL PRO' ||
+        name === 'IVG' ||
+        name === 'PYNE POD' ||
+        name === 'HYOLA'
+      )) {
+        const brand   = document.createElement('div');
         brand.className = 'brand';
+
         const head = document.createElement('div');
         head.className = 'head';
-        const h2 = document.createElement('h2'); h2.textContent = name;
+
+        const h2 = document.createElement('h2');
+        h2.textContent = name;
+
         const toggle = document.createElement('button');
-        toggle.textContent = 'Show products';
+        toggle.textContent       = 'Show products';
         toggle.dataset.showLabel = 'Show products';
         toggle.dataset.hideLabel = 'Hide products';
+
         head.append(h2, toggle);
+
         const content = document.createElement('div');
         content.className = 'brand-content';
-
-        // Render all products for this brand under Nicsalts
         renderGroup(content, val, category);
 
-       head.addEventListener('click', ()=>{
-  const open = content.style.display === 'block';
+        head.addEventListener('click', () => {
+          const isOpenNow = content.style.display === 'block';
+          const willOpen  = !isOpenNow;
 
-  document.querySelectorAll('.brand-content').forEach(el => el.style.display = 'none');
-  document.querySelectorAll('.brand').forEach(card => card.classList.remove('open'));
-  document.querySelectorAll('.brand .head button').forEach(b => {
-    const parentBrand = b.previousSibling && b.previousSibling.textContent;
-    if (parentBrand === 'ELUX' || parentBrand === 'HAYATI' || parentBrand === 'BAR JUICE') {
-      b.textContent = 'Show products';
-      b.dataset.showLabel = 'Show products';
-      b.dataset.hideLabel = 'Hide products';
-    } else {
-      b.textContent = 'Show flavours';
-      b.dataset.showLabel = 'Show flavours';
-      b.dataset.hideLabel = 'Hide flavours';
-    }
-  });
+          document.querySelectorAll('.brand-content').forEach(el => el.style.display = 'none');
+          document.querySelectorAll('.brand').forEach(card => card.classList.remove('open'));
+          document.querySelectorAll('.brand .head button').forEach(b => {
+            const show = b.dataset.showLabel || b.textContent;
+            b.textContent = show;
+          });
 
-  content.style.display = open ? 'none' : 'block';
-  toggle.textContent = open ? 'Show products' : 'Hide products';
-
-  if (!open) {
-    brand.classList.add('open');
-  }
-});
-
+          if (willOpen) {
+            content.style.display = 'block';
+            toggle.textContent = toggle.dataset.hideLabel || 'Hide products';
+            brand.classList.add('open');
+          } else {
+            content.style.display = 'none';
+            toggle.textContent = toggle.dataset.showLabel || 'Show products';
+            brand.classList.remove('open');
+          }
+        });
 
         brand.append(head, content);
         container.appendChild(brand);
-      }
-      else {
-        // Default: simple subcategory label then recurse
+
+      // ----- Pods brands -----
+      } else if (category === 'Pods' && (
+        name === 'OXVA' ||
+        name === 'VAPORESSO' ||
+        name === 'GOTEK' ||
+        name === 'GEEKVAPE' ||
+        name === 'VOOPOO' ||
+        name === 'CALIBURN' ||
+        name === 'HAYATI QUOKKA' ||
+        name === 'INNOKIN'
+      )) {
+        const brand   = document.createElement('div');
+        brand.className = 'brand';
+
+        const head = document.createElement('div');
+        head.className = 'head';
+
+        const h2 = document.createElement('h2');
+        h2.textContent = name;
+
+        const toggle = document.createElement('button');
+        toggle.textContent       = 'Show pods';
+        toggle.dataset.showLabel = 'Show pods';
+        toggle.dataset.hideLabel = 'Hide pods';
+
+        head.append(h2, toggle);
+
+        const content = document.createElement('div');
+        content.className = 'brand-content';
+        renderGroup(content, val, category);
+
+        head.addEventListener('click', () => {
+          const isOpenNow = content.style.display === 'block';
+          const willOpen  = !isOpenNow;
+
+          document.querySelectorAll('.brand-content').forEach(el => el.style.display = 'none');
+          document.querySelectorAll('.brand').forEach(card => card.classList.remove('open'));
+          document.querySelectorAll('.brand .head button').forEach(b => {
+            const show = b.dataset.showLabel || b.textContent;
+            b.textContent = show;
+          });
+
+          if (willOpen) {
+            content.style.display = 'block';
+            toggle.textContent = toggle.dataset.hideLabel || 'Hide pods';
+            brand.classList.add('open');
+          } else {
+            content.style.display = 'none';
+            toggle.textContent = toggle.dataset.showLabel || 'Show pods';
+            brand.classList.remove('open');
+          }
+        });
+
+        brand.append(head, content);
+        container.appendChild(brand);
+
+      // ----- Nicsalts brands -----
+      } else if (category === 'Nicsalts' && (
+        name === 'ELUX' ||
+        name === 'HAYATI' ||
+        name === 'BAR JUICE'
+      )) {
+        const brand   = document.createElement('div');
+        brand.className = 'brand';
+
+        const head = document.createElement('div');
+        head.className = 'head';
+
+        const h2 = document.createElement('h2');
+        h2.textContent = name;
+
+        const toggle = document.createElement('button');
+        toggle.textContent       = 'Show products';
+        toggle.dataset.showLabel = 'Show products';
+        toggle.dataset.hideLabel = 'Hide products';
+
+        head.append(h2, toggle);
+
+        const content = document.createElement('div');
+        content.className = 'brand-content';
+        renderGroup(content, val, category);
+
+        head.addEventListener('click', () => {
+          const isOpenNow = content.style.display === 'block';
+          const willOpen  = !isOpenNow;
+
+          document.querySelectorAll('.brand-content').forEach(el => el.style.display = 'none');
+          document.querySelectorAll('.brand').forEach(card => card.classList.remove('open'));
+          document.querySelectorAll('.brand .head button').forEach(b => {
+            const show = b.dataset.showLabel || b.textContent;
+            b.textContent = show;
+          });
+
+          if (willOpen) {
+            content.style.display = 'block';
+            toggle.textContent = toggle.dataset.hideLabel || 'Hide products';
+            brand.classList.add('open');
+          } else {
+            content.style.display = 'none';
+            toggle.textContent = toggle.dataset.showLabel || 'Show products';
+            brand.classList.remove('open');
+          }
+        });
+
+        brand.append(head, content);
+        container.appendChild(brand);
+
+      // ----- Other nested objects: simple subcategory then recurse -----
+      } else {
         const sub = document.createElement('div');
         sub.className = 'subcat';
         sub.textContent = name;
@@ -895,6 +968,7 @@ else if (category === 'Disposables' && (
     }
   });
 }
+
 
 // ================= RENDER =================
 function render(){
