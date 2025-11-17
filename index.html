@@ -432,7 +432,7 @@ const catalog = {
       "VAPORESSO ARMOUR G PODS": ["5ML"]
     },
     "GOTEK": {
-      "ASPIRE PODS": ["0.6 Ω","0.8 Ω"]
+      "ASPIRE GOTEK PODS": ["0.6 Ω","0.8 Ω"]
        },
     "GEEKVAPE": {
       "Q PODS": ["0.6 Ω","0.8 Ω"],
@@ -465,7 +465,7 @@ const catalog = {
     "KILLA SNUS 10 PACK": ["Apple","Banana Ice","Blue Mint","Blue Raspberry","Blueberry","Bubblegum","Cappuccino","Cherry Cola","Cold Dry","Cold Mint","Cold X Mint","Dark Cherry","Double Mint","Frosted Mint","Grape Ice","Green Mint","Lemonade","Liqourice","Mango Ice","Orange","Pineapple","Spearmint","Strawberry Cheesecake","Strawberry Lychee","Strawberry Watermelon","Tropical Punch","Watermelon","White Coffee","MINI Banana Ice","MINI Blueberry","MINI Cold Mint","MINI Mango Ice"]
   },
   "Smoking": {
-    "RAW": ["RAW CLASSIC BLACK","RAW TIPS","RAW CLASSIC","RAW CLASSIC + TIPS"],
+    "RAW": ["RAW CLASSIC BLACK","RAW BLACK + TIPS","RAW TIPS","RAW CLASSIC","RAW CLASSIC + TIPS"],
     "ELEMENTS": ["RAINBOW + TIPS","BLUE + TIPS","PINK + TIPS","RAINBOW","BLUE"],
     "SWAN": ["LOOSE TIPS X10","SLIM TIPS","EXTRA SLIM TIPS","ULTRA SLIM TIPS","MENTHOL EXTRA SLIM TIPS", "GREEN CORNER CUT"],
     "RIZLA": ["GREEN MULTIPACK 20X5 BOOKS","GREEN 100 BOOKS","BLUE KINGSIZE 50 BOOKS","BLUE 100 BOOKS","SILVER KINGSIZE 50 BOOKS","SILVER COMBI PACK 24X32 KINGSIZE BOOKS","SILVER 100 BOOKS","RIZLA MENTHOL","RIZLA EXTREME MINT","RIZLA FRESH MINT","RIZLA+ POLAR BLAST TIPS"],
@@ -602,7 +602,53 @@ const PRICE = {
   "VOOPOO Argus G2 Mini KITS": 6,
   "Hayati Quokka Lite KITS": 6,
   "Hayati Quokka Elite KITS": 10,
-  "Hayati Quokka Pro KITS": 14
+  "Hayati Quokka Pro KITS": 14,
+
+  //PODS//
+  "OXVA XLIM PODS": 1.4,
+  "OXVA NEXLIM PODS": 1.6,
+  "OXVA VPRIME PODS": 1.8,
+  "OXVA ONEO PODS": 1.5,
+  "VAPORESSO XROS PODS": 1.35,
+  "VAPORESSO LUXE X PODS": 1.45,
+  "VAPORESSO DUAL VIBE PODS": 1.5,
+  "VAPORESSO ARMOUR G PODS": 3,
+  "ASPIRE GOTEK PODS": 1.35,
+  "Q PODS": 1.6,
+  "Z XM COIL": 1.2,
+  "INNOKIN T18E COIL": 0.65,
+  "INNOKIN GO S COIL": 0.65,
+  "ARGUS PODS": 1.5,
+  "V MATE PODS": 1.5,
+  "PNP X COIL": 1.4,
+  "QUOKKA PODS": 1.6,
+  "G3 PODS": 1.7,
+
+  //SNUS//
+"NORDIC SPIRIT SNUS 10 PACK": 29,
+"HAYATI NIC POUCHES 12MG 10 PACK": 20,
+"HAYATI NIC POUCHES 20MG 10 PACK": 20,
+"HAYATI NIC POUCHES 30MG 10 PACK": 20,
+"VELO SNUS 10 PACK": 29,
+"PABLO SNUS 10 PACK": 21,
+"KILLA SNUS 10 PACK": 21,
+
+  //SMOKING//
+  "RAW CLASSIC BLACK": 16,
+  "RAW BLACK + TIPS": 17,
+  "RAW TIPS": 11,
+  "RAW CLASSIC": 11,
+  "RAW CLASSIC + TIPS": 11
+      
+   
+    
+      
+   
+ 
+      
+  
+ 
+      
 
 };
  
@@ -612,6 +658,7 @@ const PRICE = {
 const IMAGE = {
   // RAW
   "RAW CLASSIC BLACK": "https://freshgarbage.co.uk/cdn/shop/products/rawblackroach_300x300.png?v=1603134799",
+  "RAW BLACK + TIPS": "https://virwholesale.com/cdn/shop/files/raw-black-connoisseur-1-tips-24-packs-per-box-708778_934x700.png?v=1742977200",
  "RAW TIPS": "https://i.ebayimg.com/images/g/tIAAAOSw1jpcHl-R/s-l1200.jpg",
  "RAW CLASSIC": "https://freshgarbage.co.uk/cdn/shop/products/rawclassicroach_342x.png?v=1603134986",
   "RAW CLASSIC + TIPS": "https://freshgarbage.co.uk/cdn/shop/products/rawclassicroach_342x.png?v=1603134986",
@@ -737,11 +784,24 @@ const money = n => `£${(Number(n) || 0).toFixed(2)}`;
         }
 
         const label = document.createElement('div');
-        label.textContent = option;
-        label.style.flex = '1';
+label.textContent = option;
+label.style.flex = '1';
 
-        const qtyWrap = document.createElement('div');
-        qtyWrap.className = 'qty';
+const qtyWrap = document.createElement('div');
+qtyWrap.className = 'qty';
+
+// 🔹 Optional: price per option (works for RAW etc.)
+if (PRICE[option] != null) {
+  const optPrice = document.createElement('span');
+  optPrice.className = 'price-tag';
+  optPrice.textContent = money(PRICE[option]);
+  // label | price | qty
+  row.append(label, optPrice, qtyWrap);
+} else {
+  // no price -> old layout
+  
+}
+
 
         const minus = document.createElement('button'); minus.textContent = '-';
         const qty   = document.createElement('input');  qty.type = 'number'; qty.min = '0'; qty.value = '0';
