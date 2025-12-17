@@ -744,6 +744,37 @@ const IMAGE = {
 
 const money = n => `£${(Number(n) || 0).toFixed(2)}`;
 
+// ===== PODS PACK SIZES (FIXED PER PRODUCT LINE) =====
+const POD_PACKSIZE = {
+  "OXVA XLIM PODS": 3,
+  "OXVA NEXLIM PODS": 3,
+  "OXVA VPRIME PODS": 2,
+  "OXVA ONEO PODS": 3,
+
+  "VAPORESSO XROS PODS": 4,
+  "VAPORESSO LUXE X PODS": 2,
+  "VAPORESSO DUAL VIBE PODS": 2,
+  "VAPORESSO ARMOUR G PODS": 2,
+
+  "ASPIRE GOTEK PODS": 2,
+
+  "Q PODS": 3,
+  "Z XM COIL": 5,
+
+  "INNOKIN T18E COIL": 1,
+  "INNOKIN GO S COIL": 1,
+
+  "ARGUS PODS": 3,
+  "V MATE PODS": 2,
+  "PNP X COIL": 5,
+
+  "QUOKKA PODS": 3,
+  "G3 PODS": 4
+};
+
+function getPackSize(productLineName){
+  return POD_PACKSIZE[productLineName] || 1;
+}
 
 
 // ================= Helpers =================
@@ -837,6 +868,76 @@ label.style.flex = '1';
 
 const qtyWrap = document.createElement('div');
 qtyWrap.className = 'qty';
+
+        // ===== PODS: PACKS ONLY (FIXED PACK SIZE) =====
+if (category === 'Pods') {
+  const packSize = getPackSize(name); // name = "OXVA XLIM PODS" etc.
+
+  // badges
+  const packInfo = document.createElement('span');
+  packInfo.className = 'badge';
+  packInfo.textContent = `Pack of ${packSize}`;
+
+  const totalBadge = document.createElement('span');
+  totalBadge.className = 'badge';
+  totalBadge.textContent = 'Total: 0 pods';
+
+  const badgeWrap = document.createElement('div');
+  badgeWrap.style.display = 'flex';
+  badgeWrap.style.gap = '6px';
+  badgeWrap.style.alignItems = 'center';
+  badgeWrap.append(packInfo, totalBadge);
+
+  label.style.display = 'flex';
+  label.style.alignItems = 'center';
+  label.appendChild(badgeWrap);
+
+  // qty = number of packs
+  const minus = document.createElement('button'); minus.textContent = '-';
+  const qty   = document.createElement('input');  qty.type = 'number'; qty.min = '0'; qty.value = '0';
+  const plus  = document.createElement('button'); plus.textContent = '+';
+
+  function setPacks(v){
+    const packs = Math.max(0, parseInt(v || 0, 10));
+    qty.value = packs;
+
+    const totalPods = packs * packSize;
+    totalBadge.textContent = `Total: ${totalPods} pods`;
+
+    row.classList.toggle('selected', packs > 0);
+
+    if (!window.cart[name]) window.cart[name] = [];
+    const i = window.cart[name].findIndex(x => x.flavour === option);
+
+    if (packs === 0) {
+      if (i > -1) window.cart[name].splice(i, 1);
+    } else {
+      const item = {
+        flavour: option,
+        packs,
+        packSize,
+        totalPods
+      };
+      if (i > -1) window.cart[name][i] = item;
+      else window.cart[name].push(item);
+    }
+
+    if (window.cart[name] && window.cart[name].length === 0) delete window.cart[name];
+    updateSummary();
+  }
+
+  minus.addEventListener('click', () => setPacks(parseInt(qty.value || 0, 10) - 1));
+  plus .addEventListener('click', () => setPacks(parseInt(qty.value || 0, 10) + 1));
+  qty  .addEventListener('input', () => setPacks(qty.value));
+
+  qtyWrap.append(minus, qty, plus);
+  row.append(label, qtyWrap);
+  box.appendChild(row);
+
+  // 🔴 CRITICAL: STOP HERE FOR PODS
+  return;
+}
+
 
 // 🔹 Optional: price per option (works for RAW etc.)
 if (PRICE[option] != null) {
@@ -1484,7 +1585,14 @@ document.getElementById('sendBtn').addEventListener('click', function(){
     lines.push('Order:');
     Object.entries(window.cart || {}).forEach(([product, arr]) => {
       lines.push(`- ${product}`);
-      (arr || []).forEach(({ flavour, qty }) => lines.push(`  - ${flavour} x${qty}`));
+      (arr || []).forEach((item) => {
+  if (item && typeof item.packs !== "undefined") {
+    lines.push(`  - ${item.flavour} — ${item.packs} pack(s) (pack of ${item.packSize}) = ${item.totalPods} pods`);
+  } else {
+    lines.push(`  - ${item.flavour} x${item.qty}`);
+  }
+});
+
     });
     if (notes) lines.push(`Notes: ${notes}`);
 
