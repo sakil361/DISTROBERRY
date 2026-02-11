@@ -107,6 +107,27 @@
   .btn.enabled{opacity:1}
   #summary{margin-top:8px;font-size:13px;color:#9fb0c3}
   .badge{display:inline-block;background:#142033;border:1px solid #263448;color:#cfe0f5;border-radius:999px;padding:4px 8px;font-size:12px;margin-left:6px}
+  /* === OPTION PRICE (same green style as main price) === */
+.opt-price{
+  font-size: 16px;
+  font-weight: 600;
+  color: #0b0f14;
+  background: #26d07c;
+  padding: 4px 10px;
+  border-radius: 999px;
+  box-shadow: 0 0 6px #26d07c88;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.right-wrap{
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
   .fallback{display:none;background:#111a28;border:1px solid #24364a;border-radius:10px;padding:12px 14px;margin:12px 16px}
   .fallback a{color:#7cdfff}
   .fallback textarea{background:#0f1520;border:1px solid #203040;color:#cfe0f5;border-radius:8px;padding:8px;width:100%}
@@ -700,6 +721,8 @@ const PRICE = {
 "KILLA SNUS 10 PACK": 22,
 
   //SMOKING//
+ "BIG GRINDER PACK": 3.50,
+  "SMALL GRINDER PACK": 3.50,
   "RAW CLASSIC BLACK": 16,
   "RAW BLACK + TIPS": 17,
   "RAW TIPS": 11,
@@ -979,17 +1002,7 @@ if (category === 'Pods') {
 }
 
 
-// 🔹 Optional: price per option (works for RAW etc.)
-if (PRICE[option] != null) {
-  const optPrice = document.createElement('span');
-  optPrice.className = 'price-tag';
-  optPrice.textContent = money(PRICE[option]);
-  // label | price | qty
-  row.append(label, optPrice, qtyWrap);
-} else {
-  // no price -> old layout
-  
-}
+
 
 
         const minus = document.createElement('button'); minus.textContent = '-';
@@ -1026,8 +1039,35 @@ if (PRICE[option] != null) {
         qty  .addEventListener('input', () => setQty(qty.value));
 
         qtyWrap.append(minus, qty, plus);
-        row.append(label, qtyWrap);
-        box.appendChild(row);
+       qtyWrap.append(minus, qty, plus);
+
+// === PRICE FOR OPTION (GRINDERS etc.) ===
+const optionPrice = PRICE[option];
+
+// Create right side wrapper (forces it to the end)
+const rightWrap = document.createElement('div');
+rightWrap.className = 'right-wrap';
+
+// Qty first
+rightWrap.appendChild(qtyWrap);
+
+// Price LAST (far right)
+// Price FIRST (just before qty)
+if (optionPrice != null) {
+  const optPrice = document.createElement('span');
+  optPrice.className = 'opt-price';
+  optPrice.textContent = money(optionPrice);
+  rightWrap.appendChild(optPrice);
+}
+
+// Qty after price
+rightWrap.appendChild(qtyWrap);
+
+
+// Final layout
+row.append(label, rightWrap);
+box.appendChild(row);
+
       });
 
       // ---- Open / close product card with highlight ----
