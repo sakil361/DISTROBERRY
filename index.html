@@ -472,7 +472,8 @@ const catalog = {
     // ====== PODS GROUPED INTO OXVA + VAPORESSO + GOTEK ======
   "Pods": {
     "OXVA": {
-      "OXVA XLIM PODS": ["0.4 Ω","0.6 Ω","0.8 Ω","1.0 Ω","1.2 Ω"],
+      "OXVA XLIM PODS 2ML": ["0.4 Ω","0.6 Ω","0.8 Ω","1.0 Ω","1.2 Ω"],
+      "OXVA XLIM PODS 3ML": ["0.4 Ω","0.6 Ω","0.8 Ω","1.0 Ω","1.2 Ω"],
       "OXVA NEXLIM PODS": ["0.6 Ω","0.8 Ω","1.2 Ω"],
       "OXVA VPRIME PODS": ["0.2 Ω","0.4 Ω","0.6 Ω","0.8 Ω"],
       "OXVA ONEO PODS": ["0.4 Ω","0.8 Ω"]
@@ -585,8 +586,9 @@ const OOS = {
   "OX PASSION SALTS 10mg": new Set(["Berry Lemon"]),
   "OX PASSION SALTS 20mg": new Set(["Pink Lemon Bubbly"]),
 
-  "OXVA NEXLIM PODS": new Set(["0.6 Ω"]),
+  "OXVA NEXLIM PODS": new Set([]),
   "ARGUS PODS": new Set(["0.4 Ω"]),
+  "OXVA XLIM PODS 3ML": new Set (["0.4 Ω","1.0 Ω","1.2 Ω"]),
 
   "SOVEREIGN TURBOJET AIR SANITISER (Pack Of 12)": new Set (["SAVAGE","LEMON"]),
   "LIGHTERS":  new Set ([]),
@@ -693,7 +695,8 @@ const PRICE = {
   "Hayati Quokka Pro KITS": 14,
 
   //PODS//
-  "OXVA XLIM PODS": 1.4,
+  "OXVA XLIM PODS 2ML": 1.4,
+  "OXVA XLIM PODS 3ML": 1.4,
   "OXVA NEXLIM PODS": 1.6,
   "OXVA VPRIME PODS": 1.8,
   "OXVA ONEO PODS": 1.5,
@@ -955,7 +958,10 @@ qtyWrap.className = 'qty';
 
         // ===== PODS: PACKS ONLY (FIXED PACK SIZE) =====
 if (category === 'Pods') {
-  const packSize = getPackSize(name); // name = "OXVA XLIM PODS" etc.
+  const packSize = getPackSize(name);
+
+  // ✅ Out of stock handling for PODS
+  const isOOS = OOS[name] && OOS[name].has(option);
 
   // badges
   const packInfo = document.createElement('span');
@@ -981,7 +987,16 @@ if (category === 'Pods') {
   const qty   = document.createElement('input');  qty.type = 'number'; qty.min = '0'; qty.value = '0';
   const plus  = document.createElement('button'); plus.textContent = '+';
 
+  // ✅ Apply OOS styling + disable controls
+  if (isOOS) {
+    row.classList.add('oos');
+    minus.disabled = true;
+    plus.disabled  = true;
+    qty.disabled   = true;
+  }
+
   function setPacks(v){
+    if (isOOS) return; // ✅ safety
     const packs = Math.max(0, parseInt(v || 0, 10));
     qty.value = packs;
 
@@ -996,12 +1011,7 @@ if (category === 'Pods') {
     if (packs === 0) {
       if (i > -1) window.cart[name].splice(i, 1);
     } else {
-      const item = {
-        flavour: option,
-        packs,
-        packSize,
-        totalPods
-      };
+      const item = { flavour: option, packs, packSize, totalPods };
       if (i > -1) window.cart[name][i] = item;
       else window.cart[name].push(item);
     }
@@ -1018,8 +1028,7 @@ if (category === 'Pods') {
   row.append(label, qtyWrap);
   box.appendChild(row);
 
-  // 🔴 CRITICAL: STOP HERE FOR PODS
-  return;
+  return; // keep return, but now OOS works for Pods too
 }
 
 
