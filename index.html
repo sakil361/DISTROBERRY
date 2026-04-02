@@ -159,6 +159,78 @@
     pointer-events:none;
     opacity:.6;
   }
+  .image-btn{
+  background:#162232;
+  border:1px solid #263448;
+  color:#cfe0f5;
+  border-radius:8px;
+  padding:8px 10px;
+  cursor:pointer;
+  font-size:13px;
+  white-space:nowrap;
+}
+
+.image-btn:hover{
+  border-color:#26d07c;
+  color:#26d07c;
+}
+
+.img-modal{
+  display:none;
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.75);
+  z-index:9999;
+  align-items:center;
+  justify-content:center;
+  padding:20px;
+}
+
+.img-modal.open{
+  display:flex;
+}
+
+.img-modal-box{
+  background:#121821;
+  border:1px solid #263448;
+  border-radius:16px;
+  padding:16px;
+  max-width:90vw;
+  max-height:90vh;
+  width:700px;
+  box-shadow:0 12px 30px rgba(0,0,0,.45);
+}
+
+.img-modal-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:12px;
+  margin-bottom:12px;
+}
+
+.img-modal-title{
+  font-size:18px;
+  font-weight:700;
+  color:#e9f0f6;
+}
+
+.img-close{
+  background:#162232;
+  border:1px solid #263448;
+  color:#cfe0f5;
+  border-radius:10px;
+  padding:8px 12px;
+  cursor:pointer;
+}
+
+#modalImage{
+  width:100%;
+  max-height:70vh;
+  object-fit:contain;
+  border-radius:12px;
+  background:#0f1520;
+}
 </style>
 </head>
 <body>
@@ -895,6 +967,18 @@ const IMAGE = {
   "RIZLA+ POLAR BLAST TIPS": "https://stylexcloud.2dimg.com/1/whatsapp-image-2025-01-10-at-16-40-24_129da586_aeaa0f0384.jpg"
 };
 
+  const PRODUCT_IMAGE = {
+  "HAYATI SHISHA KITS": {
+    main: "https://picsum.photos/600/600",
+
+    flavours: {
+      "Double Apple / Double Apple": "https://picsum.photos/600/600",
+      "Blueberry Mint / Blueberry Mint": "https://example.com/blueberry-mint.jpg",
+      "Grape Mint / Grape Mint": "https://example.com/grape-mint.jpg"
+    }
+  }
+};
+
 
 
 const money = n => `£${(Number(n) || 0).toFixed(2)}`;
@@ -957,47 +1041,68 @@ function getPackSize(productLineName){
       wrap.className = 'product';
 
       const head = document.createElement('div');
-      head.className = 'head';
+head.className = 'head';
 
-      const h2 = document.createElement('h2');
-      h2.textContent = name;
-      h2.style.margin = '0';
-      h2.style.fontSize = '18px';
-      head.appendChild(h2);
+const h2 = document.createElement('h2');
+h2.textContent = name;
+h2.style.margin = '0';
+h2.style.fontSize = '18px';
 
-      // Optional price
-      if (PRICE[name] != null) {
-        const priceEl = document.createElement('span');
-        priceEl.className = 'price-tag';
-        priceEl.textContent = money(PRICE[name]);
-        head.appendChild(priceEl);
-      }
+const productBlock = PRODUCT_IMAGE[name];
 
-      const isColor    = (category === 'Kits');
-      const isSize     = (category === 'Pods');
-      const isProducts = (category === 'Smoking' || category === 'Misc Items');
+head.appendChild(h2);
 
-      const showLabel = isColor
-        ? 'Show colours'
-        : isSize
-          ? 'Show sizes'
-          : isProducts
-            ? 'Show products'
-            : 'Show flavours';
+// Optional price
+if (PRICE[name] != null) {
+  const priceEl = document.createElement('span');
+  priceEl.className = 'price-tag';
+  priceEl.textContent = money(PRICE[name]);
+  head.appendChild(priceEl);
+}
 
-      const hideLabel = isColor
-        ? 'Hide colours'
-        : isSize
-          ? 'Hide sizes'
-          : isProducts
-            ? 'Hide products'
-            : 'Hide flavours';
+// Main product image button
+if (productBlock && productBlock.main) {
+const titleImageBtn = document.createElement('button');
+titleImageBtn.type = 'button';
+titleImageBtn.className = 'image-btn title-image-btn';
+titleImageBtn.textContent = 'View image';
 
-      const toggle = document.createElement('button');
-      toggle.textContent = showLabel;
-      toggle.dataset.showLabel = showLabel;
-      toggle.dataset.hideLabel = hideLabel;
-      head.appendChild(toggle);
+  titleImageBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    openImageModal(name, productBlock.main);
+  });
+
+  head.appendChild(titleImageBtn);
+}
+
+const isColor    = (category === 'Kits');
+const isSize     = (category === 'Pods');
+const isProducts = (category === 'Smoking' || category === 'Misc Items');
+
+const showLabel = isColor
+  ? 'Show colours'
+  : isSize
+    ? 'Show sizes'
+    : isProducts
+      ? 'Show products'
+      : 'Show flavours';
+
+const hideLabel = isColor
+  ? 'Hide colours'
+  : isSize
+    ? 'Hide sizes'
+    : isProducts
+      ? 'Hide products'
+      : 'Hide flavours';
+
+const toggle = document.createElement('button');
+toggle.className = 'toggle-btn';
+toggle.textContent = showLabel;
+toggle.dataset.showLabel = showLabel;
+toggle.dataset.hideLabel = hideLabel;
+head.appendChild(toggle);
+
+
 
       const box = document.createElement('div');
       box.className = 'flavours';
@@ -1023,6 +1128,46 @@ function getPackSize(productLineName){
         const label = document.createElement('div');
 label.textContent = option;
 label.style.flex = '1';
+
+const productBlock = PRODUCT_IMAGE[name];
+
+let imageToShow = null;
+
+// 1. Try flavour-specific image first
+if (
+  category !== 'Smoking' &&
+  productBlock &&
+  productBlock.flavours &&
+  productBlock.flavours[option]
+) {
+  imageToShow = {
+    title: `${name} - ${option}`,
+    src: productBlock.flavours[option]
+  };
+}
+
+// 2. Fallback to main product image
+else if (category !== 'Smoking' && productBlock && productBlock.main) {
+  imageToShow = {
+    title: name,
+    src: productBlock.main
+  };
+}
+
+const viewImageBtn = document.createElement('button');
+viewImageBtn.type = 'button';
+viewImageBtn.className = 'image-btn flavour-image-btn';
+viewImageBtn.textContent = 'Click to view';
+
+if (!imageToShow) {
+  viewImageBtn.style.display = 'none';
+}
+
+viewImageBtn.addEventListener('click', (e) => {
+  e.stopPropagation();
+  if (!imageToShow) return;
+  openImageModal(imageToShow.title, imageToShow.src);
+});
 
 const qtyWrap = document.createElement('div');
 qtyWrap.className = 'qty';
@@ -1149,11 +1294,6 @@ const optionPrice = PRICE[option];
 const rightWrap = document.createElement('div');
 rightWrap.className = 'right-wrap';
 
-// Qty first
-rightWrap.appendChild(qtyWrap);
-
-// Price LAST (far right)
-// Price FIRST (just before qty)
 if (optionPrice != null) {
   const optPrice = document.createElement('span');
   optPrice.className = 'opt-price';
@@ -1161,9 +1301,11 @@ if (optionPrice != null) {
   rightWrap.appendChild(optPrice);
 }
 
-// Qty after price
-rightWrap.appendChild(qtyWrap);
+if (category !== 'Smoking') {
+  rightWrap.appendChild(viewImageBtn);
+}
 
+rightWrap.appendChild(qtyWrap);
 
 // Final layout
 row.append(label, rightWrap);
@@ -1179,10 +1321,10 @@ box.appendChild(row);
         // Close all other products
         document.querySelectorAll('.flavours').forEach(el => el.style.display = 'none');
         document.querySelectorAll('.product').forEach(card => card.classList.remove('open'));
-        document.querySelectorAll('.product .head button').forEach(b => {
-          const show = b.dataset.showLabel || 'Show flavours';
-          b.textContent = show;
-        });
+      document.querySelectorAll('.product .head .toggle-btn').forEach(b => {
+  const show = b.dataset.showLabel || 'Show flavours';
+  b.textContent = show;
+});
 
         if (willOpen) {
           box.style.display = 'block';
@@ -1218,8 +1360,8 @@ box.appendChild(row);
         const head = document.createElement('div');
         head.className = 'head';
 
-        const h2 = document.createElement('h2');
-        h2.textContent = name;
+     const h2 = document.createElement('h2');
+h2.textContent = name;
 
         const toggle = document.createElement('button');
         toggle.textContent        = 'Show kits';
@@ -1238,10 +1380,10 @@ box.appendChild(row);
 
           document.querySelectorAll('.brand-content').forEach(el => el.style.display = 'none');
           document.querySelectorAll('.brand').forEach(card => card.classList.remove('open'));
-          document.querySelectorAll('.brand .head button').forEach(b => {
-            const show = b.dataset.showLabel || b.textContent;
-            b.textContent = show;
-          });
+         document.querySelectorAll('.brand .head .toggle-btn').forEach(b => {
+  const show = b.dataset.showLabel || b.textContent;
+  b.textContent = show;
+});
 
           if (willOpen) {
             content.style.display = 'block';
@@ -1711,6 +1853,34 @@ document.getElementById('sendBtn').addEventListener('click', function(){
 })();
 </script>
   <script>
+function openImageModal(title, src){
+  const modal = document.getElementById('imgModal');
+  const img = document.getElementById('modalImage');
+  const titleEl = document.getElementById('imgModalTitle');
+
+  titleEl.textContent = title;
+  img.src = src;
+  img.alt = title;
+  modal.classList.add('open');
+}
+
+function closeImageModal(){
+  const modal = document.getElementById('imgModal');
+  const img = document.getElementById('modalImage');
+  modal.classList.remove('open');
+  img.src = '';
+}
+
+document.addEventListener('click', function(e){
+  if (e.target && e.target.id === 'imgModalClose') {
+    closeImageModal();
+  }
+  if (e.target && e.target.id === 'imgModal') {
+    closeImageModal();
+  }
+});
+</script>
+  <script>
 (function () {
   // --- Helpers ---
   function hasItems() {
@@ -1799,6 +1969,16 @@ document.getElementById('sendBtn').addEventListener('click', function(){
   });
 })();
 </script>
+
+  <div id="imgModal" class="img-modal">
+  <div class="img-modal-box">
+    <div class="img-modal-head">
+      <div id="imgModalTitle" class="img-modal-title">Product image</div>
+      <button id="imgModalClose" class="img-close" type="button">Close</button>
+    </div>
+    <img id="modalImage" src="" alt="Product image">
+  </div>
+</div>
 
 </body>
 </html>
