@@ -159,15 +159,38 @@
     pointer-events:none;
     opacity:.6;
   }
-  .image-btn{
+.image-btn{
   background:#162232;
   border:1px solid #263448;
   color:#cfe0f5;
-  border-radius:8px;
-  padding:8px 10px;
+  border-radius:7px;
+  padding:5px 8px;
   cursor:pointer;
-  font-size:13px;
+  font-size:12px;
+  line-height:1.1;
   white-space:nowrap;
+  flex-shrink:0;
+}
+  @media (max-width: 640px){
+  .product .head,
+  .brand .head{
+    gap:6px;
+    flex-wrap:wrap;
+  }
+
+  .price-tag,
+  .image-btn,
+  .product .head .toggle-btn,
+  .brand .head .toggle-btn{
+    font-size:11px;
+    padding:4px 7px;
+  }
+
+  .product .head h2,
+  .brand .head h2{
+    font-size:15px !important;
+    min-width:100%;
+  }
 }
 
 .image-btn:hover{
@@ -1065,7 +1088,7 @@ if (productBlock && productBlock.main) {
 const titleImageBtn = document.createElement('button');
 titleImageBtn.type = 'button';
 titleImageBtn.className = 'image-btn title-image-btn';
-titleImageBtn.textContent = 'View image';
+titleImageBtn.textContent = 'Image';
 
   titleImageBtn.addEventListener('click', (e) => {
     e.stopPropagation();
@@ -1157,7 +1180,7 @@ else if (category !== 'Smoking' && productBlock && productBlock.main) {
 const viewImageBtn = document.createElement('button');
 viewImageBtn.type = 'button';
 viewImageBtn.className = 'image-btn flavour-image-btn';
-viewImageBtn.textContent = 'Click to view';
+viewImageBtn.textContent = 'Image';
 
 if (!imageToShow) {
   viewImageBtn.style.display = 'none';
