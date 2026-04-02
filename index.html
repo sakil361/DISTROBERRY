@@ -96,36 +96,60 @@
   .container{max-width:980px;margin:0 auto;padding:16px}
   .cat{margin:18px 0 8px;font-weight:700;opacity:.95}
   .product,.brand{background:var(--card);border:1px solid #1f2732;border-radius:14px;margin:12px 0;padding:14px}
-  .head{display:flex;justify-content:space-between;cursor:pointer;align-items:center;gap:10px}
+  .head{
+  display:flex;
+  justify-content:space-between;
+  cursor:pointer;
+  align-items:center;
+  gap:10px;
+  flex-wrap:wrap;
+}
   .flavours,.brand-content{display:none;padding-top:10px;border-top:1px dashed #2a3545;margin-top:10px}
   .chip{display:flex;justify-content:space-between;align-items:center;background:#0f1520;border:1px solid #243244;padding:8px;border-radius:10px;margin:6px 0;position:relative}
-  .qty{display:flex;gap:6px;align-items:center}
-  .qty input{width:54px;text-align:center}
-  .selected{border-color:var(--accent)}
-  .sticky-send{position:sticky;bottom:0;background:#0b0f14;border-top:1px solid #1f2732;padding:12px 16px}
-  .btn{background:var(--accent);border:none;border-radius:10px;padding:14px;font-weight:700;width:100%;cursor:pointer;opacity:.6}
-  .btn.enabled{opacity:1}
-  #summary{margin-top:8px;font-size:13px;color:#9fb0c3}
-  .badge{display:inline-block;background:#142033;border:1px solid #263448;color:#cfe0f5;border-radius:999px;padding:4px 8px;font-size:12px;margin-left:6px}
-  /* === OPTION PRICE (same green style as main price) === */
-.opt-price{
-  font-size: 16px;
-  font-weight: 600;
-  color: #0b0f14;
-  background: #26d07c;
-  padding: 4px 10px;
-  border-radius: 999px;
-  box-shadow: 0 0 6px #26d07c88;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
+ .chip{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:10px;
+  flex-wrap:wrap;
+  background:#0f1520;
+  border:1px solid #243244;
+  padding:8px;
+  border-radius:10px;
+  margin:6px 0;
+  position:relative;
+}
+
+.chip > div:first-child{
+  min-width:0;
+}
+
+.qty{
+  display:flex;
+  gap:6px;
+  align-items:center;
+  flex-shrink:0;
+}
+
+.qty button{
+  min-width:32px;
+  height:32px;
+}
+
+.qty input{
+  width:50px;
+  min-width:50px;
+  text-align:center;
 }
 
 .right-wrap{
-  margin-left: auto;
-  display: flex;
-  align-items: center;
-  gap: 10px;
+  margin-left:auto;
+  display:flex;
+  align-items:center;
+  gap:8px;
+  flex-wrap:wrap;
+  justify-content:flex-end;
+}
 }
 
   .fallback{display:none;background:#111a28;border:1px solid #24364a;border-radius:10px;padding:12px 14px;margin:12px 16px}
@@ -253,6 +277,136 @@
   object-fit:contain;
   border-radius:12px;
   background:#0f1520;
+}
+
+  @media (max-width: 768px){
+  .container{
+    padding:12px;
+  }
+
+  .main-title{
+    font-size:24px;
+    line-height:1.2;
+  }
+
+  .support-line{
+    font-size:12px;
+  }
+
+  .cat{
+    font-size:22px;
+    padding:8px 10px;
+    margin:22px 0 10px;
+  }
+
+  .product,
+  .brand{
+    padding:10px;
+    border-radius:12px;
+  }
+
+  .head{
+    gap:8px;
+  }
+
+  .head-left,
+  .head-right{
+    width:100%;
+  }
+
+  .head-right{
+    justify-content:flex-start;
+  }
+
+  .head-left h2,
+  .brand .head h2{
+    font-size:16px !important;
+    line-height:1.25;
+  }
+
+  .price-tag,
+  .opt-price,
+  .image-btn,
+  .toggle-btn{
+    font-size:11px;
+    padding:5px 7px;
+  }
+
+  .chip{
+    align-items:flex-start;
+  }
+
+  .chip-img{
+    width:72px;
+    height:72px;
+    margin-right:0;
+  }
+
+  .right-wrap{
+    width:100%;
+    margin-left:0;
+    justify-content:flex-start;
+  }
+
+  .qty button{
+    min-width:30px;
+    height:30px;
+    padding:0 8px;
+  }
+
+  .qty input{
+    width:46px;
+    min-width:46px;
+    padding:8px 6px;
+  }
+
+  .sticky-send{
+    padding:10px 12px;
+  }
+
+  .btn{
+    padding:12px;
+    font-size:15px;
+  }
+
+  #summary{
+    font-size:12px;
+  }
+
+  .img-modal{
+    padding:10px;
+  }
+
+  .img-modal-box{
+    width:100%;
+    max-width:100%;
+    padding:12px;
+    border-radius:12px;
+  }
+
+  .img-modal-title{
+    font-size:15px;
+  }
+
+  #modalImage{
+    max-height:60vh;
+  }
+
+  dialog{
+    width:100%;
+    max-width:100%;
+    margin:0;
+    border-radius:14px;
+    padding:12px;
+  }
+
+  .modal-actions{
+    flex-direction:column;
+  }
+
+  .modal-actions button{
+    width:100%;
+  }
 }
 </style>
 </head>
@@ -1061,8 +1215,14 @@ function getPackSize(productLineName){
       const wrap = document.createElement('div');
       wrap.className = 'product';
 
-      const head = document.createElement('div');
+   const head = document.createElement('div');
 head.className = 'head';
+
+const headLeft = document.createElement('div');
+headLeft.className = 'head-left';
+
+const headRight = document.createElement('div');
+headRight.className = 'head-right';
 
 const h2 = document.createElement('h2');
 h2.textContent = name;
@@ -1071,29 +1231,29 @@ h2.style.fontSize = '18px';
 
 const productBlock = PRODUCT_IMAGE[name];
 
-head.appendChild(h2);
+headLeft.appendChild(h2);
 
 // Optional price
 if (PRICE[name] != null) {
   const priceEl = document.createElement('span');
   priceEl.className = 'price-tag';
   priceEl.textContent = money(PRICE[name]);
-  head.appendChild(priceEl);
+  headRight.appendChild(priceEl);
 }
 
 // Main product image button
 if (productBlock && productBlock.main) {
-const titleImageBtn = document.createElement('button');
-titleImageBtn.type = 'button';
-titleImageBtn.className = 'image-btn title-image-btn';
-titleImageBtn.textContent = 'Image';
+  const titleImageBtn = document.createElement('button');
+  titleImageBtn.type = 'button';
+  titleImageBtn.className = 'image-btn title-image-btn';
+  titleImageBtn.textContent = 'Image';
 
   titleImageBtn.addEventListener('click', (e) => {
     e.stopPropagation();
     openImageModal(name, productBlock.main);
   });
 
-  head.appendChild(titleImageBtn);
+  headRight.appendChild(titleImageBtn);
 }
 
 const isColor    = (category === 'Kits');
@@ -1121,8 +1281,10 @@ toggle.className = 'toggle-btn';
 toggle.textContent = showLabel;
 toggle.dataset.showLabel = showLabel;
 toggle.dataset.hideLabel = hideLabel;
-head.appendChild(toggle);
 
+headRight.appendChild(toggle);
+
+head.append(headLeft, headRight);
 
 
       const box = document.createElement('div');
@@ -1262,10 +1424,28 @@ if (category === 'Pods') {
   qty  .addEventListener('input', () => setPacks(qty.value));
 
   qtyWrap.append(minus, qty, plus);
-  row.append(label, qtyWrap);
-  box.appendChild(row);
 
-  return; // keep return, but now OOS works for Pods too
+const optionPrice = PRICE[option];
+const rightWrap = document.createElement('div');
+rightWrap.className = 'right-wrap';
+
+if (optionPrice != null) {
+  const optPrice = document.createElement('span');
+  optPrice.className = 'opt-price';
+  optPrice.textContent = money(optionPrice);
+  rightWrap.appendChild(optPrice);
+}
+
+if (category !== 'Smoking') {
+  rightWrap.appendChild(viewImageBtn);
+}
+
+rightWrap.appendChild(qtyWrap);
+
+row.append(label, rightWrap);
+box.appendChild(row);
+
+return; // keep return, but now OOS works for Pods too
 }
 
 
@@ -1340,9 +1520,7 @@ box.appendChild(row);
         const willOpen  = !isOpenNow;
 
         // Close all other products
-        document.querySelectorAll('.flavours').forEach(el => el.style.display = 'none');
-        document.querySelectorAll('.product').forEach(card => card.classList.remove('open'));
-      document.querySelectorAll('.product .head .toggle-btn').forEach(b => {
+        document.querySelectorAll('.product .head .toggle-btn').forEach(b => {
   const show = b.dataset.showLabel || 'Show flavours';
   b.textContent = show;
 });
