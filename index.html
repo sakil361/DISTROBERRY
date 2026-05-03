@@ -448,6 +448,185 @@ body{
     width:100%;
   }
 }
+
+  /* ===== MOBILE FRIENDLY FIXES ===== */
+
+.head-left{
+  flex:1;
+  min-width:0;
+}
+
+.head-right{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  flex-wrap:wrap;
+  justify-content:flex-end;
+}
+
+.opt-price{
+  font-size:14px;
+  font-weight:700;
+  color:#0b0f14;
+  background:#26d07c;
+  padding:4px 9px;
+  border-radius:999px;
+}
+
+.badge{
+  font-size:11px;
+  background:#1a2535;
+  color:#cfe0f5;
+  border:1px solid #2a3648;
+  padding:3px 7px;
+  border-radius:999px;
+  margin-left:6px;
+}
+
+@media (max-width: 600px){
+
+  header{
+    padding:14px 10px;
+  }
+
+  .container{
+    padding:10px;
+  }
+
+  .main-title{
+    font-size:22px;
+  }
+
+  .support-line{
+    font-size:12px;
+  }
+
+  .cat{
+    font-size:20px;
+    margin:18px 0 10px;
+    padding:9px;
+  }
+
+  .product,
+  .brand{
+    padding:10px;
+    margin:10px 0;
+    border-radius:12px;
+  }
+
+  .head{
+    display:flex;
+    flex-direction:column;
+    align-items:flex-start;
+    gap:8px;
+  }
+
+  .head-left,
+  .head-right{
+    width:100%;
+  }
+
+  .head-right{
+    justify-content:flex-start;
+  }
+
+  .product .head h2,
+  .brand .head h2{
+    font-size:16px !important;
+    line-height:1.25;
+    word-break:break-word;
+  }
+
+  .price-tag,
+  .opt-price,
+  .image-btn,
+  .toggle-btn,
+  .brand .head button,
+  .product .head button{
+    font-size:12px;
+    padding:6px 9px;
+  }
+
+  .chip{
+    display:grid;
+    grid-template-columns:64px 1fr;
+    gap:8px;
+    align-items:start;
+  }
+
+  .chip-img{
+    width:64px;
+    height:64px;
+    margin:0;
+  }
+
+  .chip > div:first-child{
+    font-size:14px;
+    line-height:1.25;
+    word-break:break-word;
+  }
+
+  .right-wrap{
+    grid-column:1 / -1;
+    width:100%;
+    justify-content:space-between;
+    margin-left:0;
+  }
+
+  .qty{
+    margin-left:auto;
+  }
+
+  .qty button{
+    min-width:36px;
+    height:36px;
+    font-size:18px;
+  }
+
+  .qty input{
+    width:52px;
+    min-width:52px;
+    height:36px;
+    padding:6px;
+    font-size:15px;
+  }
+
+  .sticky-send{
+    padding:10px;
+  }
+
+  .btn{
+    padding:13px;
+    font-size:15px;
+  }
+
+  #summary{
+    font-size:12px;
+    margin-top:5px;
+  }
+
+  dialog{
+    width:calc(100vw - 20px);
+    max-width:calc(100vw - 20px);
+  }
+
+  .modal-actions{
+    flex-direction:column;
+  }
+
+  .modal-actions button{
+    width:100%;
+  }
+
+  .img-modal-box{
+    width:100%;
+    max-width:100%;
+  }
+
+  #modalImage{
+    max-height:65vh;
+  }
+}
 </style>
 </head>
 <body>
