@@ -971,6 +971,8 @@ const catalog = {
     "OXVA": {
       "OXVA XLIM PODS 2ML": ["0.4 Ω","0.6 Ω","0.8 Ω"],
       "OXVA XLIM PODS 3ML": ["0.4 Ω","0.6 Ω","0.8 Ω"],
+      "OXVA XLIM EZ PODS 2ML": ["0.4 Ω"],
+      "OXVA XLIM EZ PODS 3ML": ["0.4 Ω","0.6 Ω","0.8 Ω"],
       "OXVA NEXLIM PODS": ["0.6 Ω","0.8 Ω","1.2 Ω"],
       "OXVA VPRIME PODS": ["0.2 Ω","0.4 Ω","0.6 Ω","0.8 Ω"],
       "OXVA ONEO PODS": ["0.4 Ω","0.6 Ω","0.8 Ω"]
@@ -979,11 +981,13 @@ const catalog = {
       "VAPORESSO XROS PODS": ["0.4 Ω","0.6 Ω","0.8 Ω","1.0 Ω","1.2 Ω"],
       "VAPORESSO GTX COILS": ["0.15 Ω DUAL MESH","0.2 Ω DUAL MESH","0.3 Ω DUAL MESH","0.4 Ω ","0.15 Ω V2","0.2 Ω V2","0.3 Ω V2","0.4 Ω V2","0.8 Ω V2","1.2 Ω V2",],
       "VAPORESSO LUXE X PODS": ["0.3 Ω","0.4 Ω","0.6 Ω","0.8 Ω"],
+      "VAPORESSO LUXE X DUAL MESH PODS": ["0.6 Ω",],
       "VAPORESSO DUAL VIBE PODS": ["0.6/0.8 Ω"],
       "VAPORESSO ARMOUR G PODS": ["5ML"]
     },
     "GOTEK": {
-      "ASPIRE GOTEK PODS": ["0.6 Ω","0.8 Ω"]
+      "ASPIRE GOTEK PODS": ["0.6 Ω","0.8 Ω"],
+      "ASPIRE POCKEX COIL": ["0.6 Ω"]
        },
     "GEEKVAPE": {
       "Q PODS": ["0.4 Ω","0.6 Ω","0.8 Ω"],
@@ -997,6 +1001,7 @@ const catalog = {
       "ARGUS PODS": ["0.4 Ω 2ML","0.4 Ω 3ML","0.7 Ω 3ML"],
       "V MATE PODS": ["0.4 Ω","0.7 Ω","1 Ω"],
       "PNP X COIL": ["0.15","0.2","0.3","0.45","0.8","1"],
+      "PNP COIL": ["0.15","0.45","0.6"],
       },
     "HAYATI QUOKKA": {
       "QUOKKA PODS": ["0.6 Ω","0.8 Ω"],
@@ -1402,6 +1407,8 @@ const money = n => `£${(Number(n) || 0).toFixed(2)}`;
 // ===== PODS PACK SIZES (FIXED PER PRODUCT LINE) =====
 const POD_PACKSIZE = {
   "OXVA XLIM PODS 2ML": 3,
+  "OXVA XLIM EZ PODS 2ML": 3,
+  "OXVA XLIM EZ PODS 3ML": 3,
   "OXVA XLIM PODS 3ML": 3,
   "OXVA NEXLIM PODS": 3,
   "OXVA VPRIME PODS": 2,
@@ -1410,10 +1417,12 @@ const POD_PACKSIZE = {
   "VAPORESSO XROS PODS": 4,
   "VAPORESSO GTX COILS": 5,
   "VAPORESSO LUXE X PODS": 2,
+  "VAPORESSO LUXE X DUAL MESH PODS": 2,
   "VAPORESSO DUAL VIBE PODS": 2,
   "VAPORESSO ARMOUR G PODS": 2,
 
   "ASPIRE GOTEK PODS": 2,
+  "ASPIRE POCKEX COIL": 5,
 
   "Q PODS": 3,
   "Z XM COIL": 5,
@@ -1424,6 +1433,7 @@ const POD_PACKSIZE = {
   "ARGUS PODS": 3,
   "V MATE PODS": 2,
   "PNP X COIL": 5,
+  "PNP COIL": 5,
 
   "QUOKKA PODS": 3,
   "G3 PODS": 4,
