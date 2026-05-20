@@ -547,12 +547,12 @@ body{
     padding:6px 9px;
   }
 
-  .chip{
-    display:grid;
-    grid-template-columns:64px 1fr;
-    gap:8px;
-    align-items:start;
-  }
+ .chip{
+  display:flex;
+  align-items:flex-start;
+  gap:10px;
+  flex-wrap:nowrap;
+}
 
   .chip-img{
     width:64px;
@@ -561,26 +561,26 @@ body{
   }
 
 .chip > div:first-child{
+  flex:1;
+  min-width:0;
   font-size:14px;
   line-height:1.25;
-  white-space:nowrap;
-  overflow-x:auto;
-  overflow-y:hidden;
-  word-break:normal;
-  -webkit-overflow-scrolling:touch;
-  scrollbar-width:none;
+  white-space:normal;
+  overflow:visible;
+  word-break:break-word;
 }
 
 .chip > div:first-child::-webkit-scrollbar{
   display:none;
 }
 
-  .right-wrap{
-    grid-column:1 / -1;
-    width:100%;
-    justify-content:space-between;
-    margin-left:0;
-  }
+.right-wrap{
+  margin-left:auto;
+  display:flex;
+  align-items:center;
+  gap:8px;
+  flex-shrink:0;
+}
 
   .qty{
     margin-left:auto;
