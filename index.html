@@ -560,11 +560,20 @@ body{
     margin:0;
   }
 
-  .chip > div:first-child{
-    font-size:14px;
-    line-height:1.25;
-    word-break:break-word;
-  }
+.chip > div:first-child{
+  font-size:14px;
+  line-height:1.25;
+  white-space:nowrap;
+  overflow-x:auto;
+  overflow-y:hidden;
+  word-break:normal;
+  -webkit-overflow-scrolling:touch;
+  scrollbar-width:none;
+}
+
+.chip > div:first-child::-webkit-scrollbar{
+  display:none;
+}
 
   .right-wrap{
     grid-column:1 / -1;
