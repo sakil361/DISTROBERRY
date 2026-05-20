@@ -548,10 +548,10 @@ body{
   }
 
 .chip{
-  display:flex;
+  display:grid;
+  grid-template-columns:1fr auto;
   align-items:center;
   gap:10px;
-  flex-wrap:nowrap;
 }
 
   .chip-img{
@@ -561,18 +561,15 @@ body{
   }
 
 .chip > div:first-child{
-  flex:1;
-  min-width:0;
   font-size:14px;
   line-height:1.2;
   white-space:nowrap;
-  overflow:hidden;
-  text-overflow:ellipsis;
+  overflow:visible;
+  text-overflow:unset;
+  min-width:0;
 }
 
-.chip > div:first-child::-webkit-scrollbar{
-  display:none;
-}
+
 
 .right-wrap{
   margin-left:auto;
