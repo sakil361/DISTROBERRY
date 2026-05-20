@@ -547,9 +547,9 @@ body{
     padding:6px 9px;
   }
 
- .chip{
+.chip{
   display:flex;
-  align-items:flex-start;
+  align-items:center;
   gap:10px;
   flex-wrap:nowrap;
 }
@@ -564,10 +564,10 @@ body{
   flex:1;
   min-width:0;
   font-size:14px;
-  line-height:1.25;
-  white-space:normal;
-  overflow:visible;
-  word-break:break-word;
+  line-height:1.2;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
 }
 
 .chip > div:first-child::-webkit-scrollbar{
