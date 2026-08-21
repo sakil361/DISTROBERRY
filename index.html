@@ -1063,7 +1063,46 @@ const catalog = {
     "ROLLING PAPERS": ["RIPS FLAVOUR PAPER","RIPS REGULAR PAPER","CLOUDS RAINBOW PAPER","CLOUD MIX PAPER","GROLLZ"]
   },
   "Misc Items": {
-    "DRINKS": ["REDBULL CANS CASE - 24 PACK","COCA COLA CANS CASE - 24 PACK","MONSTER CANS CASE - 24 PACK","COCA COLA 500ML BOTTLES CASE - 12 PACK","COCA COLA BOTTLES 1.75L CASE - 6 PACK"],
+  "DRINKS": {
+  "RED BULL": [
+    "REDBULL CANS CASE - 24 PACK"
+  ],
+
+  "COCA COLA": [
+    "COCA COLA CANS CASE - 24 PACK",
+    "COCA COLA 500ML BOTTLES CASE - 12 PACK",
+    "COCA COLA BOTTLES 1.75L CASE - 6 PACK"
+  ],
+
+  "MONSTER": [
+    "MONSTER CANS CASE - 24 PACK"
+  ],
+
+  "AMERICAN FANTA": [
+    "BERRY - 12 PACK",
+    "ORANGE - 12 PACK",
+    "PEACH - 12 PACK",
+    "PINEAPPLE - 12 PACK",
+    "STRAWBERRY - 12 PACK"
+  ],
+
+  "AMERICAN MOUNTAIN DEW": [
+    "VOLTAGE RASPBERRY - 12 PACK",
+    "CREAM SODA DEW - 12 PACK",
+    "DRAGON FRUIT - 12 PACK"
+  ],
+
+    "AMERICAN DR PEPPER": [
+    "CREAM SODA - 12 PACK",
+    "STRAWBERRIES & CREAM - 12 PACK"
+ ],
+      "OTHER AMERICAN DRINKS": [
+    "SUNKIST ORANGE - 12 PACK",
+    "A&W CREAM SODA -12 PACK"
+    
+  ]
+},
+    
     "BAGS": ["20X20 HEAVY DUTY BIN BAGS BOX (400 BAGS)", "10X30 HEAVY DUTY BIN BAGS BOX (300 BAGS)","BLUE LARGE VEST CARRIER BAGS 11″x17″x21″ (10 PACK)","WHITE LARGE VEST CARRIER BAGS 13″x19″x24″ (10 PACK)","BLACK BOTTLE BAGS 8″x13″x18″ (10 PACK)"],
     "BATTERIES": [
       "DURACELL C - 2 PACK X 10",
@@ -1370,7 +1409,28 @@ const PRICE = {
   "ELEMENTS CONES": 17,"JUMBO CONES": 13,"RAW CONES": 17,"ELEMENTS CONES - 40 PACK": 4,"RAW CONES - 32 PACK": 4,"RAW BLACK CONES": 20,"ELEMENTS CONES 1 1/4 - 30 PACK": 15,
   "OCB BROWN + TIPS": 20,"OCB BLACK + TIPS":20,"OCB BLUE + TIPS": 20,
   "CLIPPER LIGHTER": 23,"PRINTED LIGHTER": 6,"PUSH BUTTON LIGHTER": 6,"ADAMO LIGHTER (CHEAP)": 4.50,"CLIPPER LIGHTER GAS- 12 PACK": 10,"CLIPPER LIGHTER FLUID": 5,"RONSON LIGHTER GAS - 12 PACK": 9.50,
-  "REDBULL CANS CASE - 24 PACK": 20,"COCA COLA CANS CASE - 24 PACK": 12,"MONSTER CANS CASE - 24 PACK": 21.50,"COCA COLA 500ML BOTTLES CASE - 12 PACK": 7.50,"COCA COLA BOTTLES 1.75L CASE - 6 PACK": 10,
+
+  
+  "REDBULL CANS CASE - 24 PACK": 20,
+  "COCA COLA CANS CASE - 24 PACK": 12,
+  "MONSTER CANS CASE - 24 PACK": 21.50,
+  "COCA COLA 500ML BOTTLES CASE - 12 PACK": 9,
+  "COCA COLA BOTTLES 1.75L CASE - 6 PACK": 10,
+  
+    "BERRY - 12 PACK": 10,
+    "ORANGE - 12 PACK": 10,
+    "PEACH - 12 PACK": 10,
+    "PINEAPPLE - 12 PACK": 10,
+    "STRAWBERRY - 12 PACK": 10,
+    "VOLTAGE RASPBERRY - 12 PACK": 11,
+    "CREAM SODA DEW - 12 PACK": 11,
+    "DRAGON FRUIT - 12 PACK": 11,
+    "CREAM SODA - 12 PACK": 10.50,
+    "STRAWBERRIES & CREAM - 12 PACK": 10.50,
+    "SUNKIST ORANGE - 12 PACK": 10.50,
+    "A&W CREAM SODA -12 PACK": 10.50,
+
+  
   "20X20 HEAVY DUTY BIN BAGS BOX (400 BAGS)": 16, "10X30 HEAVY DUTY BIN BAGS BOX (300 BAGS)": 18,"BLUE LARGE VEST CARRIER BAGS 11″x17″x21″ (10 PACK)": 10,"WHITE LARGE VEST CARRIER BAGS 13″x19″x24″ (10 PACK)": 16,"BLACK BOTTLE BAGS 8″x13″x18″ (10 PACK)": 15,
       "DURACELL C - 2 PACK X 10": 21,
       "DURACELL D - 2 PACK X 10": 25,
@@ -2080,6 +2140,283 @@ h2.textContent = name;
 
         brand.append(head, content);
         container.appendChild(brand);
+
+      // ----- DRINKS: click DRINKS first, then brand dropdowns -----
+      } else if (category === 'Misc Items' && name === 'DRINKS') {
+
+        // Main DRINKS dropdown
+        const drinks = document.createElement('div');
+        drinks.className = 'brand drinks-main';
+
+        const drinksHead = document.createElement('div');
+        drinksHead.className = 'head';
+
+        const drinksHeadLeft = document.createElement('div');
+        drinksHeadLeft.className = 'head-left';
+
+        const drinksHeadRight = document.createElement('div');
+        drinksHeadRight.className = 'head-right';
+
+        const drinksH2 = document.createElement('h2');
+        drinksH2.textContent = 'DRINKS';
+        drinksH2.style.margin = '0';
+        drinksH2.style.fontSize = '18px';
+
+        const drinksToggle = document.createElement('button');
+        drinksToggle.className = 'toggle-btn';
+        drinksToggle.textContent = 'Show brands';
+        drinksToggle.dataset.showLabel = 'Show brands';
+        drinksToggle.dataset.hideLabel = 'Hide brands';
+
+        drinksHeadLeft.appendChild(drinksH2);
+        drinksHeadRight.appendChild(drinksToggle);
+        drinksHead.append(drinksHeadLeft, drinksHeadRight);
+
+        const drinksContent = document.createElement('div');
+        drinksContent.className = 'brand-content drinks-brands';
+
+        // Create each brand INSIDE the DRINKS dropdown
+        Object.entries(val).forEach(([brandName, items]) => {
+
+          const brand = document.createElement('div');
+          brand.className = 'brand drink-brand';
+
+          const head = document.createElement('div');
+          head.className = 'head';
+
+          const headLeft = document.createElement('div');
+          headLeft.className = 'head-left';
+
+          const headRight = document.createElement('div');
+          headRight.className = 'head-right';
+
+          const h2 = document.createElement('h2');
+          h2.textContent = brandName;
+          h2.style.margin = '0';
+          h2.style.fontSize = '18px';
+
+          const toggle = document.createElement('button');
+          toggle.className = 'toggle-btn';
+          toggle.textContent = 'Show products';
+          toggle.dataset.showLabel = 'Show products';
+          toggle.dataset.hideLabel = 'Hide products';
+
+          headLeft.appendChild(h2);
+          headRight.appendChild(toggle);
+          head.append(headLeft, headRight);
+
+          const content = document.createElement('div');
+          content.className = 'brand-content drink-items';
+
+          // Product/flavour rows shown directly when brand opens
+          items.forEach(item => {
+
+            const row = document.createElement('div');
+            row.className = 'chip';
+
+            const label = document.createElement('div');
+            label.textContent = item;
+            label.style.flex = '1';
+
+            const qtyWrap = document.createElement('div');
+            qtyWrap.className = 'qty';
+
+            const minus = document.createElement('button');
+            minus.textContent = '-';
+
+            const qty = document.createElement('input');
+            qty.type = 'number';
+            qty.min = '0';
+            qty.value = '0';
+
+            const plus = document.createElement('button');
+            plus.textContent = '+';
+
+            const isOOS =
+              (OOS[brandName] && OOS[brandName].has(item)) ||
+              (OOS['DRINKS'] && OOS['DRINKS'].has(item));
+
+            if (isOOS) {
+              row.classList.add('oos');
+              minus.disabled = true;
+              plus.disabled = true;
+              qty.disabled = true;
+            }
+
+            function setDrinkQty(v) {
+              if (isOOS) return;
+
+              const n = Math.max(0, parseInt(v || 0, 10));
+              qty.value = n;
+              row.classList.toggle('selected', n > 0);
+
+              if (!window.cart[brandName]) {
+                window.cart[brandName] = [];
+              }
+
+              const i = window.cart[brandName]
+                .findIndex(x => x.flavour === item);
+
+              if (n === 0) {
+                if (i > -1) {
+                  window.cart[brandName].splice(i, 1);
+                }
+              } else {
+                if (i > -1) {
+                  window.cart[brandName][i].qty = n;
+                } else {
+                  window.cart[brandName].push({
+                    flavour: item,
+                    qty: n
+                  });
+                }
+              }
+
+              if (
+                window.cart[brandName] &&
+                window.cart[brandName].length === 0
+              ) {
+                delete window.cart[brandName];
+              }
+
+              updateSummary();
+            }
+
+            minus.addEventListener('click', e => {
+              e.stopPropagation();
+              setDrinkQty(
+                parseInt(qty.value || 0, 10) - 1
+              );
+            });
+
+            plus.addEventListener('click', e => {
+              e.stopPropagation();
+              setDrinkQty(
+                parseInt(qty.value || 0, 10) + 1
+              );
+            });
+
+            qty.addEventListener('click', e => {
+              e.stopPropagation();
+            });
+
+            qty.addEventListener('input', () => {
+              setDrinkQty(qty.value);
+            });
+
+            qtyWrap.append(minus, qty, plus);
+
+            const rightWrap = document.createElement('div');
+            rightWrap.className = 'right-wrap';
+
+            const optionPrice = PRICE[item];
+
+            if (optionPrice != null) {
+              const optPrice = document.createElement('span');
+              optPrice.className = 'opt-price';
+              optPrice.textContent = money(optionPrice);
+              rightWrap.appendChild(optPrice);
+            }
+
+            rightWrap.appendChild(qtyWrap);
+            row.append(label, rightWrap);
+            content.appendChild(row);
+          });
+
+          // Brand click: open that brand's products
+          head.addEventListener('click', e => {
+            e.stopPropagation();
+
+            const willOpen =
+              content.style.display !== 'block';
+
+            // Close the other drink brands only
+            drinksContent
+              .querySelectorAll(':scope > .drink-brand')
+              .forEach(otherBrand => {
+
+                if (otherBrand === brand) return;
+
+                const otherContent =
+                  otherBrand.querySelector(
+                    ':scope > .drink-items'
+                  );
+
+                const otherToggle =
+                  otherBrand.querySelector(
+                    ':scope > .head .toggle-btn'
+                  );
+
+                if (otherContent) {
+                  otherContent.style.display = 'none';
+                }
+
+                otherBrand.classList.remove('open');
+
+                if (otherToggle) {
+                  otherToggle.textContent =
+                    otherToggle.dataset.showLabel ||
+                    'Show products';
+                }
+              });
+
+            if (willOpen) {
+              content.style.display = 'block';
+              toggle.textContent = 'Hide products';
+              brand.classList.add('open');
+            } else {
+              content.style.display = 'none';
+              toggle.textContent = 'Show products';
+              brand.classList.remove('open');
+            }
+          });
+
+          brand.append(head, content);
+          drinksContent.appendChild(brand);
+        });
+
+        // Main DRINKS click: show/hide all brands
+        drinksHead.addEventListener('click', () => {
+
+          const willOpen =
+            drinksContent.style.display !== 'block';
+
+          if (willOpen) {
+            drinksContent.style.display = 'block';
+            drinksToggle.textContent = 'Hide brands';
+            drinks.classList.add('open');
+          } else {
+            drinksContent.style.display = 'none';
+            drinksToggle.textContent = 'Show brands';
+            drinks.classList.remove('open');
+
+            // Reset brand dropdowns when DRINKS closes
+            drinksContent
+              .querySelectorAll('.drink-items')
+              .forEach(el => {
+                el.style.display = 'none';
+              });
+
+            drinksContent
+              .querySelectorAll('.drink-brand')
+              .forEach(el => {
+                el.classList.remove('open');
+              });
+
+            drinksContent
+              .querySelectorAll(
+                '.drink-brand > .head .toggle-btn'
+              )
+              .forEach(btn => {
+                btn.textContent =
+                  btn.dataset.showLabel ||
+                  'Show products';
+              });
+          }
+        });
+
+        drinks.append(drinksHead, drinksContent);
+        container.appendChild(drinks);
 
       // ----- Other nested objects: simple subcategory then recurse -----
       } else {
