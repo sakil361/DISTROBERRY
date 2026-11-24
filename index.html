@@ -1010,7 +1010,8 @@ const catalog = {
       "OXVA ONEO PODS": ["0.4 Ω","0.6 Ω","0.8 Ω"]
     },
     "VAPORESSO": {
-      "VAPORESSO XROS PODS": ["0.4 Ω","0.6 Ω","0.8 Ω","1.0 Ω","1.2 Ω"],
+      "VAPORESSO XROS PODS 2ML": ["0.4 Ω","0.6 Ω","0.8 Ω","1.0 Ω","1.2 Ω"],
+      "VAPORESSO XROS PODS 3ML": ["0.4 Ω","0.6 Ω","0.8 Ω"],
       "VAPORESSO GTX COILS": ["0.15 Ω DUAL MESH","0.2 Ω DUAL MESH","0.3 Ω DUAL MESH","0.4 Ω ","0.15 Ω V2","0.2 Ω V2","0.3 Ω V2","0.4 Ω V2","0.8 Ω V2","1.2 Ω V2",],
       "VAPORESSO LUXE X PODS": ["0.3 Ω","0.4 Ω","0.6 Ω","0.8 Ω"],
       "VAPORESSO LUXE X DUAL MESH PODS": ["0.6 Ω",],
@@ -1148,8 +1149,8 @@ const OOS = {
 ///SALTS
   "BAR JUICE 10mg": new Set([]),
   "BAR JUICE 20mg": new Set([]),
-  "HAYATI NICSALTS 10MG": new Set([]),
-  " Nicsalts 10mg": new Set(["Blue Razz Lemonade"]),
+  "HAYATI NICSALTS 10MG": new Set(["Hbubba","Ice Pop","Mango Peach Pineapple"]),
+  "HAYATI NICSALTS 20MG": new Set(["Ice Pop","Strawberry Jelly Beans"]),
    "HAYATI E-LIQUID 50/50": new Set([]),
   "OX PASSION SALTS 10mg": new Set(["Berry Lemon","Paradise Punch (Melon Lychee Guava)","Red Slush - NEW 🔥","Blue Sour Razz"]),
   "OX PASSION SALTS 20mg": new Set(["Senorita (Grapefruit Orange Pineapple)","Blue Razz Gummy","Cherry BBG","Pineapple Freeze"]),
@@ -1189,18 +1190,21 @@ const OOS = {
   
 
   //DISPOSABLES
+  
   "HAYATI PRO MAX 6K PODS": new Set(["Aloe Vera - NEW 🔥", "Apple Blackcurrant - NEW 🔥", "Blackcurrant Lemon & Mint - NEW 🔥", "Blueberry Mint - NEW 🔥", "Cherry Sour Raspberry", "Cola Ice", "Double Menthol", "Dragon Breath - NEW 🔥", "Grape GB", "Green Grape & Green Apple - NEW 🔥", "London Midnight Rain - NEW 🔥", "Mad Blue", "Mixed Berries", "Orange & Apple - NEW 🔥", "Passion Fruit Orange - NEW 🔥", "Pineapple Lemon Burst", "Raspberry Lime - NEW 🔥", "Smooth Strawberry Ice", "Spearmint", "Strawberry Kiwi", "Triple Mango", "Tropical Sour Juice", "Velvet Blueberry - NEW 🔥", "Watermelon Ice"]),
   "LOST MARY BM6000 KITS": new Set(["Acai Berry Lemonade","Blueberry","Blue Razz Gami","Grape","Mango"]),
   "LOST MARY BM6000 PODS": new Set(["Acai Berry Lemonade","Blue Razz Gami","Blue Razz Cherry","Mango","Red Apple Ice"]),
+  "HAYATI PRO ULTRA 25K PODS": new Set(["Blueberry Raspberry","Blueberry Raspberry / Mr Blue","Blueberry Cotton K / Raspberry Cotton K","Cherry Berry","Fresh Mint","Grape GB / Strawberry GB","Kiwi Banana / Straw Banana","Juicy Peach - NEW 🔥","Grape GB / Blue Razz GB - NEW 🔥"]),
   "IVG SMART MAX 10K KITS": new Set(["Cola Ice"]),
  "IVG SMART MAX 10K PODS": new Set(["Classic Menthol","Green Apple","Watermelon Strawberry"]),
   "IVG PRO 10K PODS": new Set(["Blue Raspberry","Cola Frost","Fizzy Cherry"]),
   "SKE 600 KITS": new Set(["Lemon Lime Hubahuba"]),
-  "ELFBAR 600 PODS":new Set(["Grape","Kiwi Passion Fruit Guava","Spearmint","Watermelon"]),
+  "ELFBAR 600 PODS": new Set(["Apple Peach", "Banana Ice", "Blue Razz Lemonade", "Blueberry Cherry Cranberry", "Blueberry Raspberry", "Blueberry Sour Raspberry", "Cherry Cola", "Cherry Ice", "Cola", "Elfturbo Ice", "Grape", "Kiwi Passion Fruit Guava", "Lemon Lime", "Mad Blue", "Mango",
+ "Mixed Berries","Peach Ice","Pink Grapefruit","Pink Lemonade", "Spearmint", "Strawberry Ice","Strawberry Kiwi","Strawberry Raspberry","Strawberry Raspberry Cherry Ice", "Watermelon","Watermelon BG", "Watermelon Strawberry"]),
  "HAYATI SHISHA PODS":new Set (["Strawberry Laces / Strawberry Watermelon"]),
    "Pyne Pod Click 50K KITS":new Set(["Lemonade Edition","Red Edition"]),
   "HAYATI PRO MAX 6K PODS - ZERO NICOTINE":new Set(["Fresh Mint"]),
-  "HAYATI PRO ULTRA 25K PODS": new Set([""]),
+  
   "HAYATI MINI ULTRA KITS": new Set(["Cherry Berry","Cola Ice / Orange Lemon & Lime"]),
   "Pyne Pod Click 50K PODS": new Set (["Blueberry Blackberry Lemonade","Blue Razz GB","Mixed Berries Ice","Mr Blue","Strawberry Raspberry"])
   
@@ -1331,7 +1335,8 @@ const PRICE = {
   "OXVA NEXLIM PODS": 1.6,
   "OXVA VPRIME PODS": 1.8,
   "OXVA ONEO PODS": 1.6,
-  "VAPORESSO XROS PODS": 1.35,
+  "VAPORESSO XROS PODS 2ML": 1.35,
+  "VAPORESSO XROS PODS 3ML": 1.60,
   "VAPORESSO LUXE X PODS": 1.45,
   "VAPORESSO LUXE X DUAL MESH PODS": 1.45,
   "VAPORESSO DUAL VIBE PODS": 1.7,
@@ -1532,7 +1537,8 @@ const POD_PACKSIZE = {
   "OXVA VPRIME PODS": 2,
   "OXVA ONEO PODS": 3,
 
-  "VAPORESSO XROS PODS": 4,
+  "VAPORESSO XROS PODS 2ML": 4,
+  "VAPORESSO XROS PODS 3ML": 4,
   "VAPORESSO GTX COILS": 5,
   "VAPORESSO LUXE X PODS": 2,
   "VAPORESSO LUXE X DUAL MESH PODS": 2,
